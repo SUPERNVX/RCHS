@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KINETIC // Custom Apparel & Curved Showcase</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#22c55e',
+              600: '#16a34a',
+              accent: '#a855f7',
+              cyan: '#06b6d4',
+              dark: '#0a0a0c',
+              panel: '#121318',
+              card: '#1a1c23'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            display: ['Syne', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Custom Styles for Arc Carousel & Aesthetics -->
+  <style>
+    body {
+      background-color: #0a0a0c;
+      color: #f3f4f6;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Hide default scrollbar for sleek modern look */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0a0c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a855f7;
+    }
+
+    /* Curved Side Carousel Styling */
+    .carousel-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 440px;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 40;
+    }
+
+    @media (max-width: 1024px) {
+      .carousel-container {
+        width: 320px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .carousel-container {
+        width: 240px;
+      }
+    }
+
+    .carousel-track-svg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .carousel-card {
+      position: absolute;
+      width: 210px;
+      height: 290px;
+      top: 50%;
+      right: 40px;
+      margin-top: -145px;
+      pointer-events: auto;
+      cursor: pointer;
+      transform-origin: center center;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      will-change: transform, opacity;
+      user-select: none;
+    }
+
+    @media (max-width: 1024px) {
+      .carousel-card {
+        width: 160px;
+        height: 220px;
+        margin-top: -110px;
+        right: 20px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .carousel-card {
+        width: 130px;
+        height: 180px;
+        margin-top: -90px;
+        right: 10px;
+      }
+    }
+
+    .carousel-card.active-card {
+      border-color: #a855f7 !important;
+      box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+    }
+
+    .glass-panel {
+      background: rgba(18, 19, 24, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card {
+      background: linear-gradient(135deg, rgba(30, 32, 42, 0.8) 0%, rgba(18, 19, 24, 0.9) 100%);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .glow-purple {
+      box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.3);
+    }
+
+    /* Custom T-shirt texture layer blends */
+    .shirt-graphic-blend {
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body class="selection:bg-purple-500 selection:text-white">
+
+  <!-- Top Navigation Bar -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300" id="mainHeader">
+    <div class="max-w-7xl mx-auto flex items-center justify-between glass-panel rounded-2xl px-6 py-3">
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center font-display font-black text-xl text-white shadow-lg group-hover:scale-105 transition-transform">
+          K
+        </div>
+        <span class="font-display font-extrabold text-xl tracking-wider text-white">
+          KINETIC<span class="text-purple-400">LAB</span>
+        </span>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-300">
+        <a href="#customizer" class="hover:text-purple-400 transition-colors">Customizador</a>
+        <a href="#collection" class="hover:text-purple-400 transition-colors">Coleção Curvada</a>
+        <a href="#tech" class="hover:text-purple-400 transition-colors">Tecnologia</a>
+        <a href="#reviews" class="hover:text-purple-400 transition-colors">Depoimentos</a>
+      </nav>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-4">
+        <button id="openCartBtn" class="relative p-2.5 rounded-xl glass-panel hover:border-purple-500/50 transition-all text-gray-200">
+          <i class="fa-solid fa-bag-shopping text-lg"></i>
+          <span id="cartBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-xs font-bold rounded-full flex items-center justify-center">0</span>
+        </button>
+        <a href="#stickySection" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm hover:opacity-90 shadow-lg shadow-purple-600/30 transition-all hover:scale-[1.02]">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Explorar Modelos</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- STICKY SECTION CONTAINER (LOCKED SCROLL FOR CAROUSEL) -->
+  <section id="stickySection" class="relative h-[350vh] z-10">
+    
+    <!-- STICKY VIEWPORT PINNED TO SCREEN -->
+    <div class="sticky top-0 h-screen w-full overflow-hidden flex items-center pr-0 lg:pr-[360px] pt-16">
+      
+      <!-- RIGHT SIDE CURVED CAROUSEL OVERLAY (CONSTRAINED TO STICKY SECTION) -->
+      <div class="carousel-container" id="carouselContainer">
+        <!-- SVG curved guide track matching user sketch -->
+        <svg class="carousel-track-svg" viewBox="0 0 440 1000" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#a855f7" stop-opacity="0.05" />
+              <stop offset="50%" stop-color="#a855f7" stop-opacity="0.6" />
+              <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.05" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Convex arc curve with 3-card apex protruding left in middle -->
+          <path d="M 400, 50 Q 180, 500 400, 950" 
+                fill="none" 
+                stroke="url(#arcGradient)" 
+                stroke-width="3" 
+                stroke-dasharray="6 6"
+                filter="url(#glow)"/>
+        </svg>
+
+        <!-- Carousel Floating Track Cards -->
+        <div id="carouselTrack" class="w-full h-full relative"></div>
+
+        <!-- Scroll Progress Badge on Carousel -->
+        <div class="absolute bottom-8 right-8 pointer-events-auto flex flex-col items-center gap-1.5 glass-panel px-4 py-2.5 rounded-2xl border border-purple-500/30 shadow-2xl">
+          <div class="text-[10px] font-extrabold tracking-widest text-purple-400 uppercase flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+            <span id="scrollCounterLabel">MODELO 1 DE 6</span>
+          </div>
+          <div class="text-[10px] text-gray-400 font-medium">Role para girar o arco</div>
+          <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden mt-1">
+            <div id="scrollProgressBar" class="bg-gradient-to-r from-purple-500 to-cyan-400 h-full w-0 transition-all duration-150"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero / Main T-Shirt Customizer View inside Sticky Area -->
+      <div id="customizer" class="w-full px-4 sm:px-8 max-w-6xl mx-auto flex flex-col justify-center">
+        
+        <!-- Section Header -->
+        <div class="mb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel border border-purple-500/30 text-purple-300 text-xs font-semibold uppercase tracking-wider mb-2">
+            <i class="fa-solid fa-sparkles text-purple-400"></i> Carrossel Sticky Lateral
+          </div>
+          <h1 class="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-none text-white">
+            COLEÇÃO KINETIC <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">
+              EXPLORE ROLANDO A PÁGINA
+            </span>
+          </h1>
+          <p class="text-gray-400 text-xs sm:text-sm max-w-xl mt-2">
+            O carrossel lateral fica travado na tela enquanto você rola. Conforme os modelos passam pelo centro do arco, a camiseta em destaque é atualizada automaticamente!
+          </p>
+        </div>
+
+        <!-- Customizer Workspace Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          
+          <!-- Interactive T-shirt Preview Box -->
+          <div class="lg:col-span-7 glass-card rounded-3xl p-5 relative flex flex-col items-center justify-center min-h-[380px] sm:min-h-[420px] shadow-2xl overflow-hidden group">
+            
+            <!-- Background Glow Effect -->
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-cyan-900/20 pointer-events-none"></div>
+
+            <!-- Shirt Side Toggle & Reset controls -->
+            <div class="absolute top-4 left-4 z-20 flex gap-2">
+              <button id="toggleSideBtn" class="px-3 py-1.5 rounded-lg glass-panel text-xs font-bold text-gray-200 hover:border-purple-400 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate"></i> <span id="sideLabel">FRENTE</span>
+              </button>
+              <button id="resetDesignBtn" class="p-2 rounded-lg glass-panel text-xs text-gray-400 hover:text-white transition-all" title="Resetar Design">
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+              </button>
+            </div>
+
+            <!-- Active shirt badge -->
+            <div class="absolute top-4 right-4 z-20 glass-panel px-3 py-1 rounded-full text-xs font-semibold text-purple-300 flex items-center gap-2 border border-purple-500/20">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="activeShirtTitle">Modelo Kinetic Street</span>
+            </div>
+
+            <!-- T-Shirt Interactive SVG Mockup -->
+            <div class="relative w-64 h-72 sm:w-80 sm:h-96 flex items-center justify-center my-2 transition-transform duration-500 hover:scale-105">
+              <svg id="tshirtSvg" class="w-full h-full filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.7)] transition-colors duration-300" viewBox="0 0 500 500" fill="#18181b">
+                <path d="M 160 80 Q 200 120 250 120 Q 300 120 340 80 L 440 140 L 390 220 L 350 190 L 350 430 Q 350 440 340 440 L 160 440 Q 150 440 150 430 L 150 190 L 110 220 L 60 140 Z" 
+                      id="shirtBodyPath" 
+                      fill="#18181b" 
+                      stroke="#27272a" 
+                      stroke-width="3"/>
+                <path d="M 160 80 Q 250 130 340 80" fill="none" stroke="#000000" stroke-opacity="0.4" stroke-width="6"/>
+                <path d="M 110 220 L 150 190" stroke="#000000" stroke-opacity="0.3" stroke-width="4"/>
+                <path d="M 390 220 L 350 190" stroke="#000000" stroke-opacity="0.3" stroke-width="4"/>
+              </svg>
+
+              <!-- Printable Center Area -->
+              <div class="absolute inset-0 flex items-center justify-center p-12 pointer-events-none">
+                <div class="w-36 h-44 sm:w-44 sm:h-52 border border-dashed border-white/20 rounded-xl flex flex-col items-center justify-center p-3 text-center relative overflow-hidden">
+                  <div id="printGraphicContainer" class="w-20 h-20 sm:w-28 sm:h-28 flex items-center justify-center text-purple-400 transition-all duration-300">
+                    <i class="fa-solid fa-dragon text-4xl sm:text-6xl filter drop-shadow"></i>
+                  </div>
+                  <div id="customTextContainer" class="mt-2 text-center font-display font-black tracking-widest text-[10px] sm:text-sm uppercase text-white drop-shadow-md break-words max-w-full">
+                    KINETIC URBAN
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center text-[11px] text-gray-400 mt-1">
+              <i class="fa-solid fa-mouse-field text-purple-400 mr-1"></i> Role para continuar passando as camisetas pelo arco!
+            </div>
+          </div>
+
+          <!-- Customizer Control Panel -->
+          <div class="lg:col-span-5 flex flex-col gap-4">
+            <div class="glass-panel rounded-3xl p-5 flex flex-col gap-4">
+              
+              <!-- 1. Color Selection -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                  1. Cor Base
+                </label>
+                <div class="flex items-center gap-2.5 flex-wrap" id="colorPickerList"></div>
+              </div>
+
+              <!-- 2. Graphic Selector -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                  2. Estampa Ilustrativa
+                </label>
+                <div class="grid grid-cols-4 gap-2" id="graphicPickerList"></div>
+              </div>
+
+              <!-- 3. Custom Text Input -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                  3. Texto Personalizado
+                </label>
+                <div class="relative">
+                  <input type="text" id="customTextInput" maxlength="20" placeholder="Digite seu texto..." 
+                         class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all">
+                  <span class="absolute right-3 top-2 text-[10px] text-gray-500" id="textCharCount">0/20</span>
+                </div>
+              </div>
+
+              <!-- 4. Size Selection -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                  4. Tamanho
+                </label>
+                <div class="flex gap-2" id="sizePicker">
+                  <button class="size-btn flex-1 py-1.5 rounded-xl text-xs font-bold glass-panel hover:border-purple-500 transition-all active-size" data-size="P">P</button>
+                  <button class="size-btn flex-1 py-1.5 rounded-xl text-xs font-bold glass-panel hover:border-purple-500 transition-all" data-size="M">M</button>
+                  <button class="size-btn flex-1 py-1.5 rounded-xl text-xs font-bold glass-panel hover:border-purple-500 transition-all" data-size="G">G</button>
+                  <button class="size-btn flex-1 py-1.5 rounded-xl text-xs font-bold glass-panel hover:border-purple-500 transition-all" data-size="GG">GG</button>
+                </div>
+              </div>
+
+              <!-- Price & Buy Button -->
+              <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] text-gray-400 block">Preço Final</span>
+                  <span class="font-display text-xl font-black text-white" id="mainPrice">R$ 129,90</span>
+                </div>
+                <button id="addToCartBtn" class="px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-xs hover:scale-[1.03] active:scale-95 shadow-lg shadow-purple-600/30 transition-all flex items-center gap-2">
+                  <i class="fa-solid fa-cart-plus"></i>
+                  <span>Adicionar ao Carrinho</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT CONTINUATION (SCROLLS AFTER STICKY CAROUSEL SECTION COMPLETES) -->
+  <main class="relative z-20 bg-brand-dark pt-12 pb-20">
+
+    <!-- Section Explaining Sticky Mechanic -->
+    <section id="collection" class="py-16 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/10">
+    <section id="collection" class="py-16 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold mb-3">
+            <i class="fa-solid fa-compass-drafting"></i> Design de Interface Inovador
+          </div>
+          <h2 class="font-display text-2xl sm:text-4xl font-extrabold text-white mb-4">
+            Carrossel Orbital Rotativo com Scroll
+          </h2>
+          <p class="text-gray-400 text-sm leading-relaxed mb-6">
+            Conforme você navega e rola esta página, o carrossel lateral se desloca ao longo de um raio curvo convexo, projetando as camisetas em destaque com rotação em arco e profundidade 3D.
+          </p>
+          <ul class="space-y-3 text-sm text-gray-300">
+            <li class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">1</span>
+              Sincronização instantânea com a rolagem do usuário.
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">2</span>
+              Angulação dinâmica (tangente) das estampas.
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">3</span>
+              Seleção direta ao clicar em qualquer t-shirt no carrossel.
+            </li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+          <div class="w-16 h-16 rounded-2xl bg-purple-600/20 text-purple-400 flex items-center justify-center text-3xl mb-4">
+            <i class="fa-solid fa-arrows-up-down"></i>
+          </div>
+          <h3 class="font-display text-xl font-bold text-white mb-2">Experimente Rolar a Tela!</h3>
+          <p class="text-gray-400 text-xs max-w-xs">
+            Acompanhe a movimentação das camisetas na lateral direita enquanto rola para cima ou para baixo.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mock Section: Technology & Premium Fabric -->
+    <section id="tech" class="py-16 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="font-display text-2xl sm:text-4xl font-extrabold text-white mb-3">Qualidade de Estúdio</h2>
+        <p class="text-gray-400 text-sm">Algodão sustentável de alta gramatura com impressão digital Silk HD de alta durabilidade.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="glass-panel p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-shirt"></i>
+          </div>
+          <h3 class="font-bold text-white mb-2">Algodão 100% Pima</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Toque extremamente macio, alta respirabilidade e resistência máxima ao encolhimento pós-lavagem.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-print"></i>
+          </div>
+          <h3 class="font-bold text-white mb-2">Impressão Silk HD</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Cores vibrantes e definição impecável de detalhes com pigmentos atóxicos à base de água.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+          <h3 class="font-bold text-white mb-2">Sustentabilidade</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">Processo de fabricação com zero desperdício de água e embalagens 100% recicláveis.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mock Section: Customer Reviews -->
+    <section id="reviews" class="py-16 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5">
+      <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white mb-8 text-center">O que dizem nossos criadores</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass-card p-6 rounded-2xl">
+          <div class="flex items-center gap-1 text-amber-400 text-xs mb-3">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-xs sm:text-sm text-gray-300 italic mb-4">"O efeito do carrossel no site já me chamou a atenção, mas quando a camisa chegou a qualidade da estampa me impressionou de verdade!"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-purple-600 flex items-center justify-center font-bold text-xs">LM</div>
+            <div>
+              <div class="text-xs font-bold text-white">Lucas Mendes</div>
+              <div class="text-[10px] text-gray-400">Designer Gráfico</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl">
+          <div class="flex items-center gap-1 text-amber-400 text-xs mb-3">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-xs sm:text-sm text-gray-300 italic mb-4">"Personalizei a camisa para o meu evento e ficou surreal. O fluxo do site é muito fluído e intuitivo."</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-cyan-600 flex items-center justify-center font-bold text-xs">CS</div>
+            <div>
+              <div class="text-xs font-bold text-white">Camila Silva</div>
+              <div class="text-[10px] text-gray-400">Creator & Streamer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/10 text-center text-xs text-gray-500">
+      <p>© 2026 KINETIC LAB. Todos os direitos reservados. Modelo de demonstração comercial.</p>
+    </footer>
+
+  </main>
+
+  <!-- SHOPPING CART SIDE DRAWER -->
+  <div id="cartDrawer" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300 flex justify-end">
+    <!-- Backdrop -->
+    <div id="cartBackdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm pointer-events-auto"></div>
+    
+    <!-- Drawer Content -->
+    <div class="relative w-full max-w-md bg-brand-panel h-full shadow-2xl border-l border-white/10 p-6 flex flex-col justify-between pointer-events-auto transform translate-x-full transition-transform duration-300" id="cartContent">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-bag-shopping text-purple-400 text-xl"></i>
+            <h3 class="font-display text-xl font-bold text-white">Seu Carrinho</h3>
+          </div>
+          <button id="closeCartBtn" class="p-2 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div id="cartItemsList" class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+          <!-- JS Rendered Cart Items -->
+        </div>
+      </div>
+
+      <div class="border-t border-white/10 pt-4">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-sm text-gray-400">Subtotal</span>
+          <span class="font-display text-xl font-black text-white" id="cartSubtotal">R$ 0,00</span>
+        </div>
+        <button id="checkoutBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2">
+          <span>Finalizar Compra</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Message Box (Replaces alert) -->
+  <div id="toast" class="fixed bottom-6 left-6 z-50 glass-panel border border-purple-500/50 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300">
+    <div class="w-8 h-8 rounded-xl bg-purple-600/30 text-purple-400 flex items-center justify-center text-sm">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <span id="toastMessage" class="text-xs font-bold text-white">Item adicionado!</span>
+  </div>
+
+  <script>
+    /* JavaScript Interactive Logic & Section Sticky Arc Math Engine */
+
+    // 1. T-Shirt Products Catalog (Displayed in the Side Curved Carousel)
+    const SHIRT_CATALOG = [
+      {
+        id: 'shirt-1',
+        title: 'Cyber Dragon',
+        price: 129.90,
+        color: '#18181b',
+        colorName: 'Preto Onyx',
+        icon: 'fa-dragon',
+        text: 'KINETIC URBAN',
+        badge: 'Bestseller'
+      },
+      {
+        id: 'shirt-2',
+        title: 'Neon Skull',
+        price: 139.90,
+        color: '#2e1065',
+        colorName: 'Roxo Deep',
+        icon: 'fa-skull',
+        text: 'NEON MATRIX',
+        badge: 'Novo'
+      },
+      {
+        id: 'shirt-3',
+        title: 'Cosmic Astronaut',
+        price: 119.90,
+        color: '#0f172a',
+        colorName: 'Azul Cósmico',
+        icon: 'fa-user-astronaut',
+        text: 'NOVA FRONTIER',
+        badge: 'Edição Limitada'
+      },
+      {
+        id: 'shirt-4',
+        title: 'Biohazard Cyber',
+        price: 124.90,
+        color: '#022c22',
+        colorName: 'Verde Bio',
+        icon: 'fa-biohazard',
+        text: 'TOXIC LAB',
+        badge: 'Popular'
+      },
+      {
+        id: 'shirt-5',
+        title: 'Solar Flare',
+        price: 134.90,
+        color: '#451a03',
+        colorName: 'Amber Fire',
+        icon: 'fa-sun',
+        text: 'SOLAR ENERGY',
+        badge: 'Destaque'
+      },
+      {
+        id: 'shirt-6',
+        title: 'Quantum Phoenix',
+        price: 149.90,
+        color: '#3b0764',
+        colorName: 'Violeta Neon',
+        icon: 'fa-phoenix-framework',
+        text: 'REBORN 2026',
+        badge: 'Premium'
+      }
+    ];
+
+    // Color Palette Options for Customizer
+    const COLOR_OPTIONS = [
+      { name: 'Preto Onyx', hex: '#18181b' },
+      { name: 'Roxo Deep', hex: '#2e1065' },
+      { name: 'Azul Cósmico', hex: '#0f172a' },
+      { name: 'Verde Bio', hex: '#022c22' },
+      { name: 'Amber Fire', hex: '#451a03' },
+      { name: 'Branco Studio', hex: '#e4e4e7' }
+    ];
+
+    // Icon Graphics Options
+    const GRAPHIC_OPTIONS = [
+      { icon: 'fa-dragon', label: 'Dragon' },
+      { icon: 'fa-skull', label: 'Skull' },
+      { icon: 'fa-user-astronaut', label: 'Astro' },
+      { icon: 'fa-biohazard', label: 'Hazard' },
+      { icon: 'fa-sun', label: 'Sun' },
+      { icon: 'fa-bolt', label: 'Bolt' },
+      { icon: 'fa-ghost', label: 'Ghost' },
+      { icon: 'fa-crown', label: 'Crown' }
+    ];
+
+    // App State
+    let currentState = {
+      activeShirt: { ...SHIRT_CATALOG[0] },
+      shirtSide: 'front',
+      size: 'M',
+      cart: []
+    };
+
+    // Curved Arc Carousel Motion Math & Sticky Section Tracking
+    let scrollProgress = 0;
+    let targetProgress = 0;
+    let lastCenteredIndex = -1;
+
+    const trackContainer = document.getElementById('carouselTrack');
+    const stickySection = document.getElementById('stickySection');
+    const scrollCounterLabel = document.getElementById('scrollCounterLabel');
+    const scrollProgressBar = document.getElementById('scrollProgressBar');
+
+    // Create Card Elements inside the Side Carousel
+    function initCarouselDOM() {
+      trackContainer.innerHTML = '';
+      
+      SHIRT_CATALOG.forEach((shirt, index) => {
+        const card = document.createElement('div');
+        card.className = `carousel-card glass-card rounded-2xl p-4 flex flex-col justify-between border border-white/10 ${shirt.id === currentState.activeShirt.id ? 'active-card' : ''}`;
+        card.dataset.id = shirt.id;
+        card.dataset.index = index;
+
+        card.innerHTML = `
+          <!-- Card Header Badge -->
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              ${shirt.badge}
+            </span>
+            <span class="text-xs font-black text-white">R$ ${shirt.price.toFixed(2).replace('.', ',')}</span>
+          </div>
+
+          <!-- Card T-Shirt Visual Preview -->
+          <div class="my-auto flex flex-col items-center justify-center relative">
+            <svg class="w-20 h-20 sm:w-24 sm:h-24 filter drop-shadow-md" viewBox="0 0 500 500" fill="${shirt.color}">
+              <path d="M 160 80 Q 200 120 250 120 Q 300 120 340 80 L 440 140 L 390 220 L 350 190 L 350 430 Q 350 440 340 440 L 160 440 Q 150 440 150 430 L 150 190 L 110 220 L 60 140 Z" stroke="rgba(255,255,255,0.2)" stroke-width="3"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center text-purple-400 text-xl">
+              <i class="fa-solid ${shirt.icon}"></i>
+            </div>
+          </div>
+
+          <!-- Card Footer Details -->
+          <div class="pt-2 border-t border-white/10 flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-white truncate max-w-[90px]">${shirt.title}</h4>
+              <p class="text-[10px] text-gray-400">${shirt.colorName}</p>
+            </div>
+            <button class="w-6 h-6 rounded-lg bg-purple-600/30 text-purple-300 flex items-center justify-center text-[10px] hover:bg-purple-600 hover:text-white transition-colors">
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          selectShirtFromCatalog(shirt, true);
+        });
+
+        trackContainer.appendChild(card);
+      });
+    }
+
+    /*
+      Mathematical Arc Calculation:
+      Calculates position (X, Y), angle rotation, scale, and opacity for 3 cards visible at a time.
+      - Center card protrudes far to the LEFT for emphasis.
+      - Top card stays upper right.
+      - Bottom card stays lower right.
+      - Other cards outside this 3-card window are hidden (opacity 0).
+    */
+    function updateCarouselPositions() {
+      // 1. Calculate Sticky Section Scroll Progress (0.0 to 1.0)
+      if (stickySection) {
+        const rect = stickySection.getBoundingClientRect();
+        const totalScrollable = stickySection.offsetHeight - window.innerHeight;
+        
+        if (totalScrollable > 0) {
+          const progress = Math.max(0, Math.min(1, -rect.top / totalScrollable));
+          targetProgress = progress;
+
+          if (scrollProgressBar) {
+            scrollProgressBar.style.width = `${Math.round(progress * 100)}%`;
+          }
+        }
+      }
+
+      const cards = trackContainer.querySelectorAll('.carousel-card');
+      const totalCards = cards.length;
+
+      // Smooth Lerp physics for rotation
+      scrollProgress += (targetProgress - scrollProgress) * 0.12;
+
+      // Card offset based on current scroll position
+      const cardOffsetMultiplier = scrollProgress * (totalCards - 1);
+
+      let closestToCenterIdx = -1;
+      let minDistanceToCenter = Infinity;
+
+      cards.forEach((card, idx) => {
+        // Relative distance from active center focal point (-1 = top, 0 = center, +1 = bottom)
+        const distance = idx - cardOffsetMultiplier;
+        const absDist = Math.abs(distance);
+
+        // 1. STRICT 3-CARD VISIBILITY WINDOW
+        // Only cards within range [-1.25, +1.25] are visible.
+        let opacity = 0;
+        if (absDist <= 1.25) {
+          // Smooth fade out near boundary edges
+          opacity = Math.max(0, 1 - Math.pow(absDist / 1.15, 4));
+        }
+
+        // 2. Y-Displacement (Vertical positioning for Top, Middle, Bottom)
+        const pixelY = distance * 210; // 210px vertical distance between cards
+
+        // 3. X-Displacement (Middle card bulges LEFT, Top/Bottom stay RIGHT)
+        // curveFactor peaks at 1.0 when distance = 0, drops to 0 when distance = ±1
+        const curveFactor = Math.max(0, 1 - Math.pow(absDist, 1.8));
+        
+        // Responsive leftward offset for center card
+        const isMobile = window.innerWidth < 640;
+        const isTablet = window.innerWidth < 1024;
+        const maxLeftShift = isMobile ? 80 : (isTablet ? 120 : 180);
+        
+        const pixelX = -curveFactor * maxLeftShift;
+
+        // 4. Tangent Rotation Angle (Top tilts up, center is flat, bottom tilts down)
+        const rotationAngle = -distance * 18;
+
+        // 5. Scale & Depth Emphasis (Center card is enlarged, top/bottom scaled down)
+        const scale = 0.8 + curveFactor * 0.28; // Center = 1.08x, Top/Bottom = 0.8x
+        const zIndex = Math.round(100 - absDist * 30);
+
+        // Track closest card to middle apex
+        if (absDist < minDistanceToCenter) {
+          minDistanceToCenter = absDist;
+          closestToCenterIdx = idx;
+        }
+
+        // Apply 3D transforms
+        card.style.transform = `translate3d(${pixelX}px, ${pixelY}px, 0px) rotate(${rotationAngle}deg) scale(${scale})`;
+        card.style.opacity = opacity;
+        card.style.zIndex = zIndex;
+        card.style.pointerEvents = opacity < 0.2 ? 'none' : 'auto';
+      });
+
+      // Automatically select shirt when it passes near center position
+      if (closestToCenterIdx !== -1 && closestToCenterIdx !== lastCenteredIndex && minDistanceToCenter < 0.45) {
+        lastCenteredIndex = closestToCenterIdx;
+        const shirtToSelect = SHIRT_CATALOG[closestToCenterIdx];
+        
+        selectShirtFromCatalog(shirtToSelect, false);
+
+        if (scrollCounterLabel) {
+          scrollCounterLabel.innerText = `MODELO ${closestToCenterIdx + 1} DE ${totalCards}`;
+        }
+      }
+
+      requestAnimationFrame(updateCarouselPositions);
+    }
+
+    // Select Shirt from Catalog & Sync Customizer UI
+    function selectShirtFromCatalog(shirt, isManualClick = false) {
+      currentState.activeShirt = { ...shirt };
+
+      document.getElementById('activeShirtTitle').innerText = shirt.title;
+      document.getElementById('shirtBodyPath').setAttribute('fill', shirt.color);
+      
+      const graphicContainer = document.getElementById('printGraphicContainer');
+      graphicContainer.innerHTML = `<i class="fa-solid ${shirt.icon} text-4xl sm:text-6xl filter drop-shadow"></i>`;
+      
+      document.getElementById('customTextInput').value = shirt.text;
+      document.getElementById('customTextContainer').innerText = shirt.text;
+      document.getElementById('mainPrice').innerText = `R$ ${shirt.price.toFixed(2).replace('.', ',')}`;
+
+      // Highlight active card
+      document.querySelectorAll('.carousel-card').forEach(card => {
+        if (card.dataset.id === shirt.id) {
+          card.classList.add('active-card');
+        } else {
+          card.classList.remove('active-card');
+        }
+      });
+
+      renderColorPicker();
+      renderGraphicPicker();
+
+      if (isManualClick) {
+        showToast(`Modelo "${shirt.title}" selecionado!`);
+      }
+    }
+
+    // Populate Color Swatches
+    function renderColorPicker() {
+      const colorPickerList = document.getElementById('colorPickerList');
+      colorPickerList.innerHTML = '';
+
+      COLOR_OPTIONS.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = `w-7 h-7 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-md ${c.hex === currentState.activeShirt.color ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-black' : ''}`;
+        btn.style.backgroundColor = c.hex;
+        btn.title = c.name;
+
+        btn.addEventListener('click', () => {
+          currentState.activeShirt.color = c.hex;
+          currentState.activeShirt.colorName = c.name;
+          document.getElementById('shirtBodyPath').setAttribute('fill', c.hex);
+          renderColorPicker();
+        });
+
+        colorPickerList.appendChild(btn);
+      });
+    }
+
+    // Populate Graphic Grid
+    function renderGraphicPicker() {
+      const graphicPickerList = document.getElementById('graphicPickerList');
+      graphicPickerList.innerHTML = '';
+
+      GRAPHIC_OPTIONS.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = `p-2 rounded-xl glass-panel hover:border-purple-500/50 flex flex-col items-center justify-center text-gray-300 hover:text-purple-400 transition-all ${g.icon === currentState.activeShirt.icon ? 'border-purple-500 text-purple-400 bg-purple-500/10' : ''}`;
+        
+        btn.innerHTML = `<i class="fa-solid ${g.icon} text-base mb-0.5"></i><span class="text-[8px] uppercase font-bold">${g.label}</span>`;
+
+        btn.addEventListener('click', () => {
+          currentState.activeShirt.icon = g.icon;
+          document.getElementById('printGraphicContainer').innerHTML = `<i class="fa-solid ${g.icon} text-4xl sm:text-6xl filter drop-shadow"></i>`;
+          renderGraphicPicker();
+        });
+
+        graphicPickerList.appendChild(btn);
+      });
+    }
+
+    // Custom Text Binding
+    const customTextInput = document.getElementById('customTextInput');
+    const customTextContainer = document.getElementById('customTextContainer');
+    const textCharCount = document.getElementById('textCharCount');
+
+    customTextInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      currentState.activeShirt.text = val;
+      customTextContainer.innerText = val.length > 0 ? val : '';
+      textCharCount.innerText = `${val.length}/20`;
+    });
+
+    // Size Selector Buttons
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active-size', 'border-purple-500', 'bg-purple-500/20', 'text-purple-300'));
+        btn.classList.add('active-size', 'border-purple-500', 'bg-purple-500/20', 'text-purple-300');
+        currentState.size = btn.dataset.size;
+      });
+    });
+
+    // Toggle Front / Back View of T-shirt
+    const toggleSideBtn = document.getElementById('toggleSideBtn');
+    const sideLabel = document.getElementById('sideLabel');
+    const tshirtSvg = document.getElementById('tshirtSvg');
+
+    toggleSideBtn.addEventListener('click', () => {
+      currentState.shirtSide = currentState.shirtSide === 'front' ? 'back' : 'front';
+      sideLabel.innerText = currentState.shirtSide === 'front' ? 'FRENTE' : 'VERSO';
+      
+      tshirtSvg.classList.add('scale-x-0');
+      setTimeout(() => {
+        if (currentState.shirtSide === 'back') {
+          document.getElementById('printGraphicContainer').style.opacity = '0.3';
+        } else {
+          document.getElementById('printGraphicContainer').style.opacity = '1';
+        }
+        tshirtSvg.classList.remove('scale-x-0');
+      }, 150);
+    });
+
+    // Reset Design Button
+    document.getElementById('resetDesignBtn').addEventListener('click', () => {
+      selectShirtFromCatalog(SHIRT_CATALOG[0], true);
+    });
+
+    // Add to Cart Logic
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    addToCartBtn.addEventListener('click', () => {
+      const cartItem = {
+        ...currentState.activeShirt,
+        size: currentState.size,
+        cartId: Date.now()
+      };
+
+      currentState.cart.push(cartItem);
+      updateCartUI();
+      showToast('Camiseta adicionada ao carrinho!');
+    });
+
+    // Cart Drawer Controls
+    const openCartBtn = document.getElementById('openCartBtn');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartBackdrop = document.getElementById('cartBackdrop');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartContent = document.getElementById('cartContent');
+
+    function toggleCart(open) {
+      if (open) {
+        cartDrawer.classList.remove('pointer-events-none', 'opacity-0');
+        cartDrawer.classList.add('opacity-100');
+        cartContent.classList.remove('translate-x-full');
+      } else {
+        cartDrawer.classList.add('pointer-events-none', 'opacity-0');
+        cartDrawer.classList.remove('opacity-100');
+        cartContent.classList.add('translate-x-full');
+      }
+    }
+
+    openCartBtn.addEventListener('click', () => toggleCart(true));
+    closeCartBtn.addEventListener('click', () => toggleCart(false));
+    cartBackdrop.addEventListener('click', () => toggleCart(false));
+
+    function updateCartUI() {
+      const cartBadge = document.getElementById('cartBadge');
+      const cartItemsList = document.getElementById('cartItemsList');
+      const cartSubtotal = document.getElementById('cartSubtotal');
+
+      cartBadge.innerText = currentState.cart.length;
+
+      if (currentState.cart.length === 0) {
+        cartItemsList.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <i class="fa-solid fa-bag-shopping text-4xl mb-3 opacity-30"></i>
+            <p class="text-sm">Seu carrinho está vazio.</p>
+          </div>
+        `;
+        cartSubtotal.innerText = 'R$ 0,00';
+        return;
+      }
+
+      let total = 0;
+      cartItemsList.innerHTML = '';
+
+      currentState.cart.forEach((item, idx) => {
+        total += item.price;
+        const itemEl = document.createElement('div');
+        itemEl.className = 'glass-card p-3 rounded-xl flex items-center justify-between gap-3';
+        itemEl.innerHTML = `
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center text-purple-400 text-xl relative overflow-hidden" style="background-color: ${item.color}">
+            <i class="fa-solid ${item.icon}"></i>
+          </div>
+          <div class="flex-1">
+            <h4 class="text-xs font-bold text-white">${item.title}</h4>
+            <div class="text-[10px] text-gray-400 flex gap-2 mt-0.5">
+              <span>Tam: <strong>${item.size}</strong></span>
+              <span>•</span>
+              <span>${item.colorName}</span>
+            </div>
+            <div class="text-xs font-bold text-purple-400 mt-1">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+          </div>
+          <button onclick="removeCartItem(${idx})" class="text-gray-500 hover:text-rose-400 p-2 text-xs transition-colors">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        `;
+        cartItemsList.appendChild(itemEl);
+      });
+
+      cartSubtotal.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    window.removeCartItem = function(index) {
+      currentState.cart.splice(index, 1);
+      updateCartUI();
+    };
+
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      if (currentState.cart.length === 0) {
+        showToast('Adicione ao menos um item ao carrinho!');
+        return;
+      }
+      showToast('Pedido efetuado com sucesso! (Demonstração)');
+      currentState.cart = [];
+      updateCartUI();
+      toggleCart(false);
+    });
+
+    // Toast Notification helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      
+      toastMessage.innerText = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // App Initialization on Window Load
+    window.onload = function() {
+      initCarouselDOM();
+      renderColorPicker();
+      renderGraphicPicker();
+      updateCartUI();
+      
+      requestAnimationFrame(updateCarouselPositions);
+    };
+  </script>
+</body>
+</html>

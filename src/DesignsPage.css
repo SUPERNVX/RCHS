@@ -1,0 +1,27 @@
+/* Small component-specific details not covered by Tailwind utilities. */
+.pyramid-page { width: 100%; min-width: 320px; overflow-x: clip; font-family: var(--font-sans); }
+.pyramid-grid { width: min(100%, 1780px); margin-inline: auto; }
+.pyramid-stage { min-height: calc(100svh - 160px); }
+.pyramid-stage > div { min-height: calc(100svh - 160px); }
+.top-line-indicator { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(242,118,46,.9), transparent); }
+.pyramid-card { aspect-ratio: 1 / 1; will-change: transform, opacity; transform-style: preserve-3d; transition: border-color .4s ease, box-shadow .4s ease; }
+.pyramid-card:hover { border-color: rgba(242,118,46,.65); box-shadow: 0 20px 40px -18px rgba(23,23,23,.18); }
+.design-surface { background: var(--design-bg); }
+.design-center { justify-content: flex-start; padding-top: 22px; }
+.design-center strong { max-width: 90%; font: 800 clamp(14px, 1.6vw, 22px)/.98 var(--display); letter-spacing: -.07em; }
+.design-center small { margin-top: 7px; }
+.design-center small { margin-top: 8px; font: 700 8px var(--sans); letter-spacing: .16em; opacity: .62; text-transform: uppercase; }
+.design-overlay { background: linear-gradient(to top, rgba(0,0,0,.88), transparent 72%); }
+.design-modal { position: relative; width: min(620px, 100%); }
+.design-modal-close { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(11,11,14,.6); cursor: pointer; }
+.design-modal-title { position: relative; z-index: 2; padding: 0 52px 18px 0; text-align: center; }
+.design-modal-title p { margin: 0 0 7px; color: #f2762e; font: 700 9px var(--sans); letter-spacing: .18em; text-transform: uppercase; }
+.design-modal-title h2 { margin: 0; color: #fff; font: 800 clamp(21px, 4vw, 32px)/1 var(--display); letter-spacing: -.07em; }
+.design-modal-title span { display: block; margin-top: 7px; color: rgba(255,255,255,.62); font: 600 10px var(--sans); letter-spacing: .04em; }
+.design-modal-art { position: relative; display: flex; min-height: min(78vh, 680px); flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: var(--design-bg); color: var(--design-fg); box-shadow: 0 25px 80px rgba(0,0,0,.45); }
+.design-modal-art::before { content: none; }
+.design-modal-placeholder { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.design-modal-placeholder strong { font: 800 clamp(42px, 8vw, 78px)/1 var(--display); letter-spacing: -.09em; }
+.design-modal-placeholder small { font: 700 8px var(--sans); letter-spacing: .18em; opacity: .68; text-transform: uppercase; }
+@media (max-width: 767px) { .pyramid-stage, .pyramid-stage > div { min-height: calc(100svh - 110px); } }
+@media (prefers-reduced-motion: reduce) { .pyramid-card { transition: none; } }
