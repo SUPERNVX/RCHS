@@ -106,7 +106,7 @@ h1 em, h2 em, .customizer-panel h3 em { color: var(--orange); font-family: var(-
 .hero-note { margin: 19px 0 0; color: var(--muted-2); font-size: 10px; }
 .hero-stage { position: relative; align-self: stretch; min-height: 525px; }
 .hero-spinimage { position: absolute; top: -20%; right: -16%; bottom: -17%; left: -12%; transform: translate(8%, -6%); }
-@media (max-width: 680px) { .hero-spinimage { top: -11%; right: -18%; bottom: -12%; left: -6%; transform: translate(2%, -4%); } }
+@media (max-width: 680px) { .hero-spinimage { top: -11%; right: -8%; bottom: -12%; left: -8%; transform: translateY(-4%); } }
 .stage-orbit { position: absolute; top: 50%; left: 50%; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 50%; transform: translate(-50%, -50%) rotate(-24deg); pointer-events: none; }
 .orbit-one { width: min(47vw, 570px); height: min(29vw, 350px); }
 .orbit-two { width: min(39vw, 470px); height: min(23vw, 280px); transform: translate(-50%, -50%) rotate(28deg); border-color: color-mix(in srgb, var(--orange) 25%, transparent); }
@@ -313,7 +313,7 @@ h1 em, h2 em, .customizer-panel h3 em { color: var(--orange); font-family: var(-
   .orbit-two { width: 83%; height: 44%; }
   .hero-placeholder-back { top: 7%; left: 14%; width: 34%; height: 53%; }
   .hero-placeholder-front { right: 13%; bottom: 3%; width: 44%; height: 61%; }
-  .hero-sticker { top: 8%; right: 8%; width: 70px; height: 70px; font-size: 8px; }
+  .hero-sticker { display: none; }
   .hero-sticker b { font-size: 9px; }
   .stage-caption { right: 0; bottom: -1px; gap: 15px; font-size: 8px; }
   .ticker { justify-content: flex-start; padding: 15px 18px; animation: ticker-shift 18s linear infinite; width: max-content; }

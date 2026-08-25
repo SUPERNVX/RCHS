@@ -59,6 +59,7 @@ const PYRAMID_OFFSET = 180
 const PARALLAX_SPEED = 0.8
 const SCRUB_TIME = 2.5
 const SCROLL_DISTANCE = 2200
+const MOBILE_SCROLL_DISTANCE = 1400
 
 function MiniIcon({ name, size = 16 }: { name: 'arrow-left' | 'arrow-down' | 'arrow-up-right' | 'sliders' | 'close' | 'rotate' | 'sun' | 'moon'; size?: number }) {
   const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
@@ -89,7 +90,7 @@ export function DesignsPage({ onBack }: { onBack: () => void }) {
 
     const context = gsap.context(() => {
       const mobile = window.innerWidth < 768
-      const baseOffset = mobile ? PYRAMID_OFFSET * .45 : PYRAMID_OFFSET
+      const baseOffset = mobile ? PYRAMID_OFFSET * .7 : PYRAMID_OFFSET
       const center = root.querySelectorAll<HTMLElement>('[data-step="0"]')
       const stepOne = root.querySelectorAll<HTMLElement>('[data-step="1"]')
       const stepTwo = root.querySelectorAll<HTMLElement>('[data-step="2"]')
@@ -109,7 +110,7 @@ export function DesignsPage({ onBack }: { onBack: () => void }) {
         scrollTrigger: {
           trigger: stage,
           start: 'top top',
-          end: `+=${SCROLL_DISTANCE}`,
+          end: `+=${mobile ? MOBILE_SCROLL_DISTANCE : SCROLL_DISTANCE}`,
           scrub: SCRUB_TIME,
           pin: true,
           anticipatePin: 1,
@@ -183,7 +184,7 @@ export function DesignsPage({ onBack }: { onBack: () => void }) {
       <section className="pyramid-stage relative w-full overflow-hidden" data-pyramid-stage>
         <div className="flex min-h-screen w-full items-center px-3 py-12 md:px-6">
           <div className="pyramid-grid grid w-full max-w-[1780px] grid-cols-2 items-start gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4 lg:grid-cols-7 lg:gap-5" data-pyramid-grid>
-            {columns.map((column, columnIndex) => <div key={`${column.step}-${columnIndex}`} className="flex flex-col gap-4" data-step={column.step}>
+            {columns.map((column, columnIndex) => <div key={`${column.step}-${columnIndex}`} className="flex flex-col gap-4" data-step={column.step} data-col-index={columnIndex}>
               {column.designs.map((design) => <button key={design.number} type="button" data-design-card className="pyramid-card square-card group relative w-full overflow-hidden rounded-2xl border border-black/10 bg-white text-left outline-none focus-visible:ring-2 focus-visible:ring-tiger dark:border-white/10 dark:bg-card" style={{ '--design-bg': design.background, '--design-fg': design.foreground } as CSSProperties} onClick={() => setSelectedDesign(design)} aria-label={`Open ${design.title} design`}>
                 <span className="design-surface absolute inset-0 transition-transform duration-500 group-hover:scale-105" />
                 <span className="design-index absolute left-3 top-3 z-10 font-mono text-[9px] tracking-[.14em] opacity-70" style={{ color: design.foreground }}>IMG {String(design.number).padStart(2, '0')}</span>

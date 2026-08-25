@@ -23,5 +23,5 @@
 .design-modal-placeholder { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
 .design-modal-placeholder strong { font: 800 clamp(42px, 8vw, 78px)/1 var(--display); letter-spacing: -.09em; }
 .design-modal-placeholder small { font: 700 8px var(--sans); letter-spacing: .18em; opacity: .68; text-transform: uppercase; }
-@media (max-width: 767px) { .pyramid-stage, .pyramid-stage > div { min-height: calc(100svh - 110px); } }
+@media (max-width: 767px) { .pyramid-stage, .pyramid-stage > div { min-height: calc(100svh - 110px); } [data-col-index] { display: none; } [data-col-index='2'], [data-col-index='3'] { display: flex; } }
 @media (prefers-reduced-motion: reduce) { .pyramid-card { transition: none; } }
