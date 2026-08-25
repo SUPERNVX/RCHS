@@ -3,6 +3,7 @@ import './App.css'
 import { DesignsPage } from './DesignsPage'
 import SpinImage from './components/originkit/ui/spinimage'
 import { FadeText } from './components/ui/fade-text'
+import { MobileProductStack } from './components/mobile-product-stack'
 import { getTheme, toggleTheme, type Theme } from './theme'
 
 type IconName = 'arrow-up-right' | 'arrow-right' | 'bag' | 'menu' | 'close' | 'check' | 'plus' | 'minus' | 'star' | 'chevron-left' | 'chevron-right' | 'sun' | 'moon'
@@ -103,8 +104,22 @@ function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   }
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 680px)').matches)
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 680px)')
+    const update = (event: MediaQueryListEvent) => setIsMobile(event.matches)
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+
+  return isMobile
+}
+
 function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
   const [activeProductId, setActiveProductId] = useState(1)
+  const isMobile = useIsMobile()
   const [scrollProgress, setScrollProgress] = useState(0)
   const stickySectionRef = useRef<HTMLDivElement>(null)
   const scrollProductRef = useRef(1)
@@ -121,6 +136,12 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
 
   function switchTheme() {
     setThemeState(toggleTheme())
+  }
+
+  function handleStackProductChange(product: Product) {
+    setActiveProductId(product.id)
+    const matchingColor = colorOptions.find((option) => option.name === product.colorName)
+    if (matchingColor) setSelectedColor(matchingColor)
   }
 
   useEffect(() => () => window.clearTimeout(noticeTimerRef.current), [])
@@ -211,6 +232,17 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
     }))
   }
 
+  const customizerPanel = (
+    <div className="customizer-panel">
+      <p className="eyebrow">Make it yours</p><h3>Customize your<br /><em>school spirit.</em></h3>
+      <p className="customizer-copy">Personalize the details that make this tee feel like yours.</p>
+      <div className="control-group"><label>01 / Select a color <span>{selectedColor.name}</span></label><div className="color-options">{colorOptions.map((color) => <button key={color.name} className={selectedColor.name === color.name ? 'color-swatch selected' : 'color-swatch'} style={{ backgroundColor: color.value }} type="button" aria-label={color.name} aria-pressed={selectedColor.name === color.name} onClick={() => setSelectedColor(color)}><span>{selectedColor.name === color.name && <Icon name="check" size={14} />}</span></button>)}</div></div>
+      <div className="control-group"><label htmlFor="custom-text">02 / Add your text <span>{customText.length}/14</span></label><input id="custom-text" value={customText} maxLength={14} onChange={(event) => setCustomText(event.target.value.toUpperCase())} placeholder="YOUR TEXT" /></div>
+      <div className="control-group"><label>03 / Choose your size <span>Size guide</span></label><div className="size-options">{sizes.map((size) => <button key={size} type="button" className={selectedSize === size ? 'size-option selected' : 'size-option'} onClick={() => setSelectedSize(size)} aria-pressed={selectedSize === size}>{size}</button>)}</div></div>
+      <button className="button button-orange add-button" type="button" onClick={addToCart}>Add to bag <span>${activeProduct.price.toFixed(2)}</span> <Icon name="arrow-up-right" size={16} /></button>
+    </div>
+  )
+
   return (
     <div className="site-shell">
       <header className="site-header">
@@ -272,6 +304,9 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
             <div><p className="eyebrow">01 / The collection</p><h2>Find your<br /><em>everyday</em> uniform.</h2></div>
           </div>
 
+          {isMobile ? (
+            <MobileProductStack products={products} onActiveChange={handleStackProductChange} />
+          ) : (
           <div className="sticky-product-section relative w-screen" ref={stickySectionRef}>
             <div className="sticky-product-viewport sticky top-0 h-screen w-full">
           <div className="shop-layout relative grid w-full">
@@ -285,14 +320,7 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
               <div className="preview-bottom"><div><span className="preview-index">0{activeProduct.id} / 04</span><h3>{activeProduct.name}</h3></div><span className="price">${activeProduct.price.toFixed(2)}</span></div>
             </div>
 
-            <div className="customizer-panel">
-              <p className="eyebrow">Make it yours</p><h3>Customize your<br /><em>school spirit.</em></h3>
-              <p className="customizer-copy">Personalize the details that make this tee feel like yours.</p>
-              <div className="control-group"><label>01 / Select a color <span>{selectedColor.name}</span></label><div className="color-options">{colorOptions.map((color) => <button key={color.name} className={selectedColor.name === color.name ? 'color-swatch selected' : 'color-swatch'} style={{ backgroundColor: color.value }} type="button" aria-label={color.name} aria-pressed={selectedColor.name === color.name} onClick={() => setSelectedColor(color)}><span>{selectedColor.name === color.name && <Icon name="check" size={14} />}</span></button>)}</div></div>
-              <div className="control-group"><label htmlFor="custom-text">02 / Add your text <span>{customText.length}/14</span></label><input id="custom-text" value={customText} maxLength={14} onChange={(event) => setCustomText(event.target.value.toUpperCase())} placeholder="YOUR TEXT" /></div>
-              <div className="control-group"><label>03 / Choose your size <span>Size guide</span></label><div className="size-options">{sizes.map((size) => <button key={size} type="button" className={selectedSize === size ? 'size-option selected' : 'size-option'} onClick={() => setSelectedSize(size)} aria-pressed={selectedSize === size}>{size}</button>)}</div></div>
-              <button className="button button-orange add-button" type="button" onClick={addToCart}>Add to bag <span>${activeProduct.price.toFixed(2)}</span> <Icon name="arrow-up-right" size={16} /></button>
-            </div>
+            {customizerPanel}
 
             <aside className="rail-carousel absolute right-0" aria-label="Explore the Tiger collection">
               <div className="rail-header"><div><p className="eyebrow">Explore</p><strong>Tiger styles</strong></div><span>{String(activeProduct.id).padStart(2, '0')} / 04</span></div>
@@ -302,6 +330,13 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
           </div>
             </div>
           </div>
+          )}
+
+          {isMobile && (
+            <section className="mobile-customizer" aria-label="Customize your tee">
+              {customizerPanel}
+            </section>
+          )}
 
           <div className="designs-callout">
             <p className="designs-callout-copy">Choose a base, make it yours, and carry a little Richland wherever you go.</p>

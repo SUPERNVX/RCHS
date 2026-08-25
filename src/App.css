@@ -175,6 +175,27 @@ h1 em, h2 em, .customizer-panel h3 em { color: var(--orange); font-family: var(-
 .add-button { width: 100%; margin-top: 9px; justify-content: space-between; }
 .add-button span { margin-left: auto; opacity: .75; font-weight: 500; }
 
+/* Mobile product stack (component renders only ≤680px) */
+.mobile-stack-section { position: relative; height: 220vh; }
+.mobile-stack-viewport { position: sticky; top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; height: 100svh; padding: 84px 24px 36px; }
+.mobile-stack-topline { display: flex; align-items: center; justify-content: space-between; width: min(300px, 84vw); color: var(--muted); font-size: 10px; letter-spacing: .13em; text-transform: uppercase; }
+.mobile-stack-stage { position: relative; width: min(300px, 84vw); height: 400px; perspective: 1200px; }
+.mobile-stack-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; will-change: transform, opacity; }
+.stack-card-face { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; width: 100%; height: 330px; overflow: hidden; border-radius: 16px; background: var(--card-color); color: rgba(255,255,255,.87); box-shadow: 0 20px 40px -18px rgba(23,23,23,.3); }
+.stack-card-face::before { content: ''; position: absolute; width: 72%; aspect-ratio: 1; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; transform: rotate(-25deg) scaleY(.6); }
+.stack-card-brand { font: 800 30px/1 var(--display); letter-spacing: -.1em; }
+.stack-card-face strong { font: 800 26px/1 var(--display); letter-spacing: -.05em; }
+.stack-card-face small { font: 700 8px var(--sans); letter-spacing: .17em; text-transform: uppercase; opacity: .7; }
+.stack-card-team { font: 700 9px var(--sans); letter-spacing: .27em; }
+.stack-card-copy { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 12px; color: var(--muted); font-size: 11px; }
+.stack-card-copy strong { color: var(--ink); font: 800 14px var(--display); letter-spacing: -.03em; }
+.mobile-stack-counter { display: flex; align-items: center; gap: 14px; color: var(--ink); font: 800 12px var(--display); letter-spacing: .08em; }
+.mobile-stack-dots { display: flex; gap: 7px; }
+.mobile-stack-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: var(--line); transition: background .25s, transform .25s; }
+.mobile-stack-dots button.is-active { background: var(--orange); transform: scale(1.3); }
+.mobile-stack-hint { margin: 0; color: var(--muted-2); font: 700 8px var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+.mobile-customizer { width: min(430px, 100%); margin: 0 auto; padding: 30px 24px 90px; }
+
 /* Right edge carousel */
 .rail-carousel { position: absolute; top: 0; right: 0; bottom: 0; z-index: 5; width: clamp(340px, 23vw, 440px); min-height: 0; padding: 96px 45px 44px 36px; background: linear-gradient(90deg, color-mix(in srgb, var(--paper) 0%, transparent) 0%, color-mix(in srgb, var(--paper) 55%, transparent) 26%, color-mix(in srgb, var(--paper) 90%, transparent) 100%); }
 .rail-header { display: flex; align-items: flex-end; justify-content: space-between; min-height: 52px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
