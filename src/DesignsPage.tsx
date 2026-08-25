@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import './DesignsPage.css'
 import { FadeText } from './components/ui/fade-text'
+import { getTheme, toggleTheme, type Theme } from './theme'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -59,11 +60,13 @@ const PARALLAX_SPEED = 0.8
 const SCRUB_TIME = 2.5
 const SCROLL_DISTANCE = 2200
 
-function MiniIcon({ name, size = 16 }: { name: 'arrow-left' | 'arrow-down' | 'arrow-up-right' | 'sliders' | 'close' | 'rotate'; size?: number }) {
+function MiniIcon({ name, size = 16 }: { name: 'arrow-left' | 'arrow-down' | 'arrow-up-right' | 'sliders' | 'close' | 'rotate' | 'sun' | 'moon'; size?: number }) {
   const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
   if (name === 'arrow-left') return <svg {...common}><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
   if (name === 'arrow-down') return <svg {...common}><path d="M12 5v14M18 13l-6 6-6-6" /></svg>
   if (name === 'arrow-up-right') return <svg {...common}><path d="M7 17 17 7M8 7h9v9" /></svg>
+  if (name === 'sun') return <svg {...common}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+  if (name === 'moon') return <svg {...common}><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z" /></svg>
   if (name === 'sliders') return <svg {...common}><path d="M4 6h16M4 12h16M4 18h16M8 4v4M16 10v4M10 16v4" /></svg>
   if (name === 'close') return <svg {...common}><path d="m6 6 12 12M18 6 6 18" /></svg>
   return <svg {...common}><path d="M4 12a8 8 0 0 0 13.7 5.7L20 15.5M20 12a8 8 0 0 0-13.7-5.7L4 8.5M4 4v4.5h4.5M20 20v-4.5h-4.5" /></svg>
@@ -72,7 +75,12 @@ function MiniIcon({ name, size = 16 }: { name: 'arrow-left' | 'arrow-down' | 'ar
 export function DesignsPage({ onBack }: { onBack: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [selectedDesign, setSelectedDesign] = useState<Design | null>(null)
+  const [theme, setThemeState] = useState<Theme>(getTheme)
   const modalContentRef = useRef<HTMLDivElement>(null)
+
+  function switchTheme() {
+    setThemeState(toggleTheme())
+  }
 
   useLayoutEffect(() => {
     document.title = 'All Designs · Richland County Tigers'
@@ -154,6 +162,9 @@ export function DesignsPage({ onBack }: { onBack: () => void }) {
           <span className="brand-copy"><strong>Richland County</strong><small>High School · Tigers</small></span>
         </button>
         <div className="header-actions">
+          <button className="bag-button" type="button" onClick={switchTheme} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} aria-pressed={theme === 'dark'}>
+            <MiniIcon name={theme === 'dark' ? 'sun' : 'moon'} size={17} />
+          </button>
           <button type="button" className="header-link" onClick={onBack}>Back to shop <MiniIcon name="arrow-up-right" size={15} /></button>
         </div>
       </header>
@@ -166,14 +177,14 @@ export function DesignsPage({ onBack }: { onBack: () => void }) {
           <FadeText text="the Tiger." direction="in" wordDelay={0.09} delay={0.55} className="mt-1 flex flex-wrap justify-center gap-x-[.26em] font-editorial text-tiger font-normal italic" />
         </h1>
         <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[var(--muted)]">A living collection of marks, colors and ideas from the Richland County community.</p>
-        <div className="mt-8 flex animate-bounce items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 font-mono text-[10px] tracking-wider text-[var(--muted)]"><MiniIcon name="arrow-down" size={14} /> Scroll to explore the archive</div>
+        <div className="mt-8 flex animate-bounce items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 font-mono text-[10px] tracking-wider text-[var(--muted)] dark:border-white/10 dark:bg-card"><MiniIcon name="arrow-down" size={14} /> Scroll to explore the archive</div>
       </section>
 
       <section className="pyramid-stage relative w-full overflow-hidden" data-pyramid-stage>
         <div className="flex min-h-screen w-full items-center px-3 py-12 md:px-6">
           <div className="pyramid-grid grid w-full max-w-[1780px] grid-cols-2 items-start gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4 lg:grid-cols-7 lg:gap-5" data-pyramid-grid>
             {columns.map((column, columnIndex) => <div key={`${column.step}-${columnIndex}`} className="flex flex-col gap-4" data-step={column.step}>
-              {column.designs.map((design) => <button key={design.number} type="button" data-design-card className="pyramid-card square-card group relative w-full overflow-hidden rounded-2xl border border-black/10 bg-white text-left outline-none focus-visible:ring-2 focus-visible:ring-tiger" style={{ '--design-bg': design.background, '--design-fg': design.foreground } as CSSProperties} onClick={() => setSelectedDesign(design)} aria-label={`Open ${design.title} design`}>
+              {column.designs.map((design) => <button key={design.number} type="button" data-design-card className="pyramid-card square-card group relative w-full overflow-hidden rounded-2xl border border-black/10 bg-white text-left outline-none focus-visible:ring-2 focus-visible:ring-tiger dark:border-white/10 dark:bg-card" style={{ '--design-bg': design.background, '--design-fg': design.foreground } as CSSProperties} onClick={() => setSelectedDesign(design)} aria-label={`Open ${design.title} design`}>
                 <span className="design-surface absolute inset-0 transition-transform duration-500 group-hover:scale-105" />
                 <span className="design-index absolute left-3 top-3 z-10 font-mono text-[9px] tracking-[.14em] opacity-70" style={{ color: design.foreground }}>IMG {String(design.number).padStart(2, '0')}</span>
                 <span className="design-center relative z-10 flex h-full flex-col items-center justify-start px-4 pt-8 text-center" style={{ color: design.foreground }}><strong>{design.title}</strong><small>design placeholder</small></span>
@@ -184,7 +195,7 @@ export function DesignsPage({ onBack }: { onBack: () => void }) {
         </div>
       </section>
 
-      <footer className="border-t border-black/10 px-5 py-10 text-center font-mono text-[10px] tracking-wider text-[var(--muted)]"><button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-2 text-tiger transition hover:text-[var(--orange-deep)]"><MiniIcon name="arrow-left" size={14} /> Back to the Tiger shop</button><p>RCHS design archive · 2026</p></footer>
+      <footer className="border-t border-black/10 px-5 py-10 text-center font-mono text-[10px] tracking-wider text-[var(--muted)] dark:border-white/10"><button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-2 text-tiger transition hover:text-[var(--orange-deep)]"><MiniIcon name="arrow-left" size={14} /> Back to the Tiger shop</button><p>RCHS design archive · 2026</p></footer>
 
       {selectedDesign && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-5 backdrop-blur-xl" role="dialog" aria-modal="true" aria-label={`${selectedDesign.title} preview`} onClick={() => setSelectedDesign(null)}><div ref={modalContentRef} className="design-modal" onClick={(event) => event.stopPropagation()}><button type="button" className="design-modal-close absolute right-0 top-0 z-10 text-white/70 transition hover:text-white" aria-label="Close design preview" onClick={() => setSelectedDesign(null)}><MiniIcon name="close" /></button><div className="design-modal-title"><p>{selectedDesign.category}</p><h2>{selectedDesign.title}</h2><span>{selectedDesign.description}</span></div><div className="design-modal-art" style={{ '--design-bg': selectedDesign.background, '--design-fg': selectedDesign.foreground } as CSSProperties}><div className="design-modal-placeholder"><strong>IMG {String(selectedDesign.number).padStart(2, '0')}</strong><small>design placeholder</small></div></div></div></div>}
     </div>

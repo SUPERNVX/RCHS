@@ -3,8 +3,9 @@ import './App.css'
 import { DesignsPage } from './DesignsPage'
 import SpinImage from './components/originkit/ui/spinimage'
 import { FadeText } from './components/ui/fade-text'
+import { getTheme, toggleTheme, type Theme } from './theme'
 
-type IconName = 'arrow-up-right' | 'arrow-right' | 'bag' | 'menu' | 'close' | 'check' | 'plus' | 'minus' | 'star' | 'chevron-left' | 'chevron-right'
+type IconName = 'arrow-up-right' | 'arrow-right' | 'bag' | 'menu' | 'close' | 'check' | 'plus' | 'minus' | 'star' | 'chevron-left' | 'chevron-right' | 'sun' | 'moon'
 
 type Product = {
   id: number
@@ -97,6 +98,8 @@ function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
     case 'star': return <svg {...common} fill="currentColor" stroke="none"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg>
     case 'chevron-left': return <svg {...common}><path d="m15 18-6-6 6-6" /></svg>
     case 'chevron-right': return <svg {...common}><path d="m9 18 6-6-6-6" /></svg>
+    case 'sun': return <svg {...common}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    case 'moon': return <svg {...common}><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z" /></svg>
   }
 }
 
@@ -113,7 +116,12 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [notice, setNotice] = useState('')
   const [isNoticeVisible, setIsNoticeVisible] = useState(false)
+  const [theme, setThemeState] = useState<Theme>(getTheme)
   const noticeTimerRef = useRef(0)
+
+  function switchTheme() {
+    setThemeState(toggleTheme())
+  }
 
   useEffect(() => () => window.clearTimeout(noticeTimerRef.current), [])
 
@@ -216,6 +224,9 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
           <a href="#details" onClick={() => setIsMenuOpen(false)}>Details</a>
         </nav>
         <div className="header-actions">
+          <button className="bag-button" type="button" onClick={switchTheme} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} aria-pressed={theme === 'dark'}>
+            <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={17} />
+          </button>
           <a className="header-link" href="#shop">Build your tee <Icon name="arrow-up-right" size={15} /></a>
           <button className="bag-button" type="button" onClick={() => setIsCartOpen(true)} aria-label={`Open shopping bag, ${totalItems} items`}>
             <Icon name="bag" size={19} /><span>{totalItems}</span>
