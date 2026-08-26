@@ -5,10 +5,11 @@ import SpinImage from './components/originkit/ui/spinimage'
 import { FadeText } from './components/ui/fade-text'
 import { MobileProductStack } from './components/mobile-product-stack'
 import { getTheme, toggleTheme, type Theme } from './theme'
+import { heroShirtUrls, shirtImages } from './shirts'
 
 type IconName = 'arrow-up-right' | 'arrow-right' | 'bag' | 'menu' | 'close' | 'check' | 'plus' | 'minus' | 'star' | 'chevron-left' | 'chevron-right' | 'sun' | 'moon'
 
-type Product = {
+export type Product = {
   id: number
   name: string
   label: string
@@ -16,11 +17,12 @@ type Product = {
   color: string
   colorName: string
   image: string
+  imageSrc: string
   description: string
   tag: string
 }
 
-type CartItem = {
+export type CartItem = {
   product: Product
   size: string
   colorName: string
@@ -31,47 +33,51 @@ type CartItem = {
 const products: Product[] = [
   {
     id: 1,
-    name: 'The Tiger Tee',
-    label: 'Core collection',
+    name: 'Claw Stripes',
+    label: 'School Mark',
     price: 32,
-    color: '#f2762e',
-    colorName: 'Tiger Orange',
+    color: '#3a3d40',
+    colorName: 'Heather Charcoal',
     image: 'IMG 01',
-    description: 'A clean, everyday classic made for showing up in Tiger style.',
+    imageSrc: shirtImages.front[1],
+    description: 'Orange claw tears over OTN · RCHS on heather charcoal.',
     tag: 'Best seller',
   },
   {
     id: 2,
-    name: 'Richland Varsity',
-    label: 'Limited run',
-    price: 38,
-    color: '#18202a',
-    colorName: 'Midnight',
+    name: 'One Tiger Nation',
+    label: 'Community',
+    price: 32,
+    color: '#f2762e',
+    colorName: 'Tiger Orange',
     image: 'IMG 02',
-    description: 'A heavyweight school spirit layer with a timeless varsity feel.',
+    imageSrc: shirtImages.front[2],
+    description: 'Hand-rough caps on tiger orange. One school, one roar.',
     tag: 'New',
   },
   {
     id: 3,
-    name: 'Tiger Track Tee',
-    label: 'Athletics edit',
-    price: 34,
-    color: '#d9d4ca',
-    colorName: 'Stone',
+    name: 'Tigers Block',
+    label: 'Varsity',
+    price: 32,
+    color: '#f2762e',
+    colorName: 'Tiger Orange',
     image: 'IMG 03',
-    description: 'Lightweight, easy and ready for the field, stands or the weekend.',
-    tag: 'Athletics',
+    imageSrc: shirtImages.front[3],
+    description: 'Classic varsity block, outlined in tiger orange.',
+    tag: 'Varsity',
   },
   {
     id: 4,
-    name: 'County Classic',
-    label: 'Alumni collection',
-    price: 36,
-    color: '#e7e2d9',
-    colorName: 'Ivory',
+    name: 'Always Be A Tiger',
+    label: 'Spirit Wear',
+    price: 34,
+    color: '#2f3336',
+    colorName: 'Dark Heather',
     image: 'IMG 04',
-    description: 'A soft neutral base for a personal take on the Richland identity.',
-    tag: 'Classic',
+    imageSrc: shirtImages.front[4],
+    description: 'Tribal half-tiger + mantra on dark heather.',
+    tag: 'Spirit',
   },
 ]
 
@@ -117,7 +123,7 @@ function useIsMobile() {
   return isMobile
 }
 
-function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
+function Storefront({ onNavigate, cart, setCart, isCartOpen, setIsCartOpen, notice, isNoticeVisible, showNotice, totalItems, formattedSubtotal, updateQuantity }: { onNavigate: (path: string) => void; cart: CartItem[]; setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; isCartOpen: boolean; setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>; notice: string; isNoticeVisible: boolean; showNotice: (msg: string) => void; totalItems: number; formattedSubtotal: string; updateQuantity: (index: number, delta: number) => void }) {
   const [activeProductId, setActiveProductId] = useState(1)
   const isMobile = useIsMobile()
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -126,13 +132,8 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
   const [selectedColor, setSelectedColor] = useState(colorOptions[0])
   const [selectedSize, setSelectedSize] = useState('M')
   const [customText, setCustomText] = useState('RCHS')
-  const [cart, setCart] = useState<CartItem[]>([])
-  const [isCartOpen, setIsCartOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [notice, setNotice] = useState('')
-  const [isNoticeVisible, setIsNoticeVisible] = useState(false)
   const [theme, setThemeState] = useState<Theme>(getTheme)
-  const noticeTimerRef = useRef(0)
 
   function switchTheme() {
     setThemeState(toggleTheme())
@@ -144,8 +145,6 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
     if (matchingColor) setSelectedColor(matchingColor)
   }
 
-  useEffect(() => () => window.clearTimeout(noticeTimerRef.current), [])
-
   useEffect(() => {
     if (!isCartOpen) return
     const handleKey = (event: KeyboardEvent) => {
@@ -156,10 +155,6 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
   }, [isCartOpen])
 
   const activeProduct = products.find((product) => product.id === activeProductId) ?? products[0]
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
-  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
-
-  const formattedSubtotal = useMemo(() => `$${subtotal.toFixed(2)}`, [subtotal])
 
   useEffect(() => {
     let frame = 0
@@ -207,13 +202,6 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
     }
   }
 
-  function showNotice(message: string) {
-    setNotice(message)
-    window.clearTimeout(noticeTimerRef.current)
-    noticeTimerRef.current = window.setTimeout(() => setIsNoticeVisible(false), 2600)
-    setIsNoticeVisible(true)
-  }
-
   function addToCart() {
     const existing = cart.find((item) => item.product.id === activeProduct.id && item.size === selectedSize && item.colorName === selectedColor.name && item.text === customText)
     if (existing) {
@@ -222,14 +210,6 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
       setCart([...cart, { product: activeProduct, size: selectedSize, colorName: selectedColor.name, text: customText, quantity: 1 }])
     }
     showNotice('Added to your bag')
-  }
-
-  function updateQuantity(index: number, delta: number) {
-    setCart(cart.flatMap((item, itemIndex) => {
-      if (itemIndex !== index) return [item]
-      const quantity = item.quantity + delta
-      return quantity > 0 ? [{ ...item, quantity }] : []
-    }))
   }
 
   const customizerPanel = (
@@ -284,8 +264,8 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
           <div className="hero-stage" aria-label="Featured Tigers apparel placeholders">
             <div className="stage-orbit orbit-one" />
             <div className="stage-orbit orbit-two" />
-            <div className="hero-spinimage" aria-label="Spinning RCHS apparel image placeholders">
-              <SpinImage images={['IMG 01', 'IMG 02', 'IMG 03', 'IMG 04', 'IMG 05', 'IMG 06', 'IMG 07', 'IMG 08']} imageWidth={150} imageHeight={200} direction="anticlockwise" path="curved" xCurve={-28} yCurve={-18} speed={1.6} rounded={4} orbitUnit="%" orbitWidthPct={58} placeholder />
+            <div className="hero-spinimage" aria-label="Spinning RCHS apparel">
+              <SpinImage images={heroShirtUrls} imageWidth={150} imageHeight={200} direction="anticlockwise" path="curved" xCurve={-28} yCurve={-18} speed={1.6} rounded={16} orbitUnit="%" orbitWidthPct={58} />
             </div>
             <div className="hero-sticker">RCHS<br /><b>TIGERS</b></div>
             <div className="stage-caption"><span>01 / 04</span><span>Scroll to explore ↓</span></div>
@@ -314,7 +294,7 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
               <div className="preview-topline"><span>{activeProduct.label}</span><span>Made to order</span></div>
               <div className="preview-art" style={{ '--shirt-color': selectedColor.value } as React.CSSProperties}>
                 <div className="preview-glow" />
-                <div className="shirt-placeholder"><span>{activeProduct.image}</span><small>product image</small></div>
+                <div className="shirt-placeholder"><img src={activeProduct.imageSrc} alt={activeProduct.name} width={320} height={330} loading="eager" decoding="async" /></div>
                 <div className="preview-label"><span>RCHS / 26</span><b>{customText || 'YOUR TEXT'}</b></div>
               </div>
               <div className="preview-bottom"><div><span className="preview-index">0{activeProduct.id} / 04</span><h3>{activeProduct.name}</h3></div><span className="price">${activeProduct.price.toFixed(2)}</span></div>
@@ -324,7 +304,7 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
 
             <aside className="rail-carousel absolute right-0" aria-label="Explore the Tiger collection">
               <div className="rail-header"><div><p className="eyebrow">Explore</p><strong>Tiger styles</strong></div><span>{String(activeProduct.id).padStart(2, '0')} / 04</span></div>
-              <div className="rail-viewport"><div className="rail-line" />{products.map((product, index) => { const distance = index - scrollProgress * (products.length - 1); const absoluteDistance = Math.abs(distance); const curve = Math.max(0, 1 - Math.pow(Math.min(absoluteDistance, 1), 1.8)); const opacity = absoluteDistance <= 1.25 ? Math.max(0, 1 - Math.pow(absoluteDistance / 1.3, 3)) : 0; return <button key={product.id} type="button" aria-label={`Select ${product.name}`} aria-current={activeProduct.id === product.id ? 'true' : undefined} className={activeProduct.id === product.id ? 'rail-card is-active' : 'rail-card'} style={{ opacity, zIndex: Math.round(10 - absoluteDistance * 3), transform: `translate3d(${-curve * 24}px, ${distance * 148}px, 0) rotate(${-distance * 11}deg) scale(${0.8 + curve * 0.2})`, filter: `blur(${Math.min(absoluteDistance * .7, 2)}px)`, pointerEvents: opacity > .15 ? 'auto' : 'none' }} onClick={() => selectProduct(product, true)}><div className="rail-card-media" style={{ '--card-color': product.color } as React.CSSProperties}><span>{product.image}</span><small>product image</small></div><div className="rail-card-copy"><strong>{product.name}</strong><span>${product.price.toFixed(2)}</span></div></button>})}</div>
+              <div className="rail-viewport"><div className="rail-line" />{products.map((product, index) => { const distance = index - scrollProgress * (products.length - 1); const absoluteDistance = Math.abs(distance); const curve = Math.max(0, 1 - Math.pow(Math.min(absoluteDistance, 1), 1.8)); const opacity = absoluteDistance <= 1.25 ? Math.max(0, 1 - Math.pow(absoluteDistance / 1.3, 3)) : 0; return <button key={product.id} type="button" aria-label={`Select ${product.name}`} aria-current={activeProduct.id === product.id ? 'true' : undefined} className={activeProduct.id === product.id ? 'rail-card is-active' : 'rail-card'} style={{ opacity, zIndex: Math.round(10 - absoluteDistance * 3), transform: `translate3d(${-curve * 24}px, ${distance * 148}px, 0) rotate(${-distance * 11}deg) scale(${0.8 + curve * 0.2})`, filter: `blur(${Math.min(absoluteDistance * .7, 2)}px)`, pointerEvents: opacity > .15 ? 'auto' : 'none' }} onClick={() => selectProduct(product, true)}><div className="rail-card-media"><img src={product.imageSrc} alt={product.name} width={320} height={218} loading="lazy" decoding="async" /></div><div className="rail-card-copy"><strong>{product.name}</strong><span>${product.price.toFixed(2)}</span></div></button>})}</div>
               <div className="rail-bottom"><div className="rail-scroll-label"><span>Scroll to explore</span><div className="rail-progress"><i style={{ width: `${Math.round(scrollProgress * 100)}%` }} /></div></div><div className="rail-controls"><button type="button" aria-label="Previous product" onClick={() => selectProduct(products[(activeProductId - 2 + products.length) % products.length], true)}><Icon name="chevron-left" size={15} /></button><button type="button" aria-label="Next product" onClick={() => selectProduct(products[activeProductId % products.length], true)}><Icon name="chevron-right" size={15} /></button></div></div>
             </aside>
           </div>
@@ -350,12 +330,26 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
         </section>
 
         <section className="details-section" id="details"><div className="details-intro"><p className="eyebrow">03 / The details</p><h2>Good design<br />goes <em>further.</em></h2></div><div className="detail-grid"><div><span className="detail-number">01</span><h3>Made for movement</h3><p>Soft, durable cotton with room to move from first bell to final whistle.</p></div><div><span className="detail-number">02</span><h3>Made by our community</h3><p>Every style starts with the spirit, stories and colors of Richland County.</p></div><div><span className="detail-number">03</span><h3>Made to be yours</h3><p>Personalize your favorite piece and make the school store feel personal.</p></div></div></section>
+
+        <section className="order-cta" aria-label="Place your order">
+          <div className="order-cta-inner">
+            <div className="order-cta-copy">
+              <p className="eyebrow">Ready to order?</p>
+              <h2>Carry a little <em>Richland</em> with you.</h2>
+              <p>{totalItems === 0 ? 'Your bag is empty — add a tee and checkout in seconds. Pickup at RCHS is free.' : `${totalItems} ${totalItems === 1 ? 'item' : 'items'} in your bag — ready when you are.`}</p>
+            </div>
+            <div className="order-cta-actions">
+              <button className="button button-orange" type="button" onClick={() => setIsCartOpen(true)}>{totalItems > 0 ? `Review bag · ${formattedSubtotal}` : 'Review your bag'} <Icon name="arrow-up-right" size={16} /></button>
+              <button className="button button-dark" type="button" onClick={() => onNavigate('/designs')}>Browse all 9 designs <Icon name="arrow-right" size={16} /></button>
+            </div>
+          </div>
+        </section>
       </main>
 
       <footer className="site-footer"><div className="footer-brand"><span className="brand-mark">RC</span><span><strong>Richland County</strong><small>High School · Tigers</small></span></div><p>Official merchandise for the Tiger community.</p><span>© 2026 RCHS</span></footer>
 
       <div className={isCartOpen ? 'cart-overlay is-open' : 'cart-overlay'} onClick={() => setIsCartOpen(false)} />
-      <aside className={isCartOpen ? 'cart-drawer is-open' : 'cart-drawer'} aria-label="Shopping bag" aria-hidden={!isCartOpen}><div className="cart-header"><div><p className="eyebrow">Your selection</p><h2>Shopping bag <span>{totalItems}</span></h2></div><button type="button" aria-label="Close shopping bag" onClick={() => setIsCartOpen(false)}><Icon name="close" /></button></div><div className="cart-items">{cart.length === 0 ? <div className="empty-cart"><div className="empty-bag"><Icon name="bag" size={24} /></div><h3>Your bag is waiting.</h3><p>Choose a piece from the collection and make it yours.</p><button className="text-link" type="button" onClick={() => setIsCartOpen(false)}>Keep browsing <Icon name="arrow-right" size={15} /></button></div> : cart.map((item, index) => <div className="cart-item" key={`${item.product.id}-${item.size}-${item.colorName}-${item.text}`}><div className="cart-item-image" style={{ '--card-color': item.product.color } as React.CSSProperties}><span>{item.product.image}</span></div><div className="cart-item-copy"><div><strong>{item.product.name}</strong><span>{item.colorName} · {item.size}{item.text && ` · ${item.text}`}</span></div><strong>${(item.product.price * item.quantity).toFixed(2)}</strong><div className="quantity"><button type="button" aria-label="Decrease quantity" onClick={() => updateQuantity(index, -1)}><Icon name="minus" size={13} /></button><span>{item.quantity}</span><button type="button" aria-label="Increase quantity" onClick={() => updateQuantity(index, 1)}><Icon name="plus" size={13} /></button></div></div></div>)}</div><div className="cart-footer"><div><span>Subtotal</span><strong>{formattedSubtotal}</strong></div><button className="button button-dark checkout-button" type="button" onClick={() => showNotice('Checkout is coming soon')}>Checkout <Icon name="arrow-up-right" size={16} /></button><p>Pickup at Richland County High School is always free.</p></div></aside>
+       <aside className={isCartOpen ? 'cart-drawer is-open' : 'cart-drawer'} aria-label="Shopping bag" aria-hidden={!isCartOpen}><div className="cart-header"><div><p className="eyebrow">Your selection</p><h2>Shopping bag <span>{totalItems}</span></h2></div><button type="button" aria-label="Close shopping bag" onClick={() => setIsCartOpen(false)}><Icon name="close" /></button></div><div className="cart-items">{cart.length === 0 ? <div className="empty-cart"><div className="empty-bag"><Icon name="bag" size={24} /></div><h3>Your bag is waiting.</h3><p>Choose a piece from the collection and make it yours.</p><button className="text-link" type="button" onClick={() => setIsCartOpen(false)}>Keep browsing <Icon name="arrow-right" size={15} /></button></div> : cart.map((item, index) => <div className="cart-item" key={`${item.product.id}-${item.size}-${item.colorName}-${item.text}`}><div className="cart-item-image"><img src={item.product.imageSrc} alt={item.product.name} width={83} height={83} loading="lazy" decoding="async" /></div><div className="cart-item-copy"><div><strong>{item.product.name}</strong><span>{item.colorName} · {item.size}{item.text && ` · ${item.text}`}</span></div><strong>${(item.product.price * item.quantity).toFixed(2)}</strong><div className="quantity"><button type="button" aria-label="Decrease quantity" onClick={() => updateQuantity(index, -1)}><Icon name="minus" size={13} /></button><span>{item.quantity}</span><button type="button" aria-label="Increase quantity" onClick={() => updateQuantity(index, 1)}><Icon name="plus" size={13} /></button></div></div></div>)}</div><div className="cart-footer"><div><span>Subtotal</span><strong>{formattedSubtotal}</strong></div><button className="button button-dark checkout-button" type="button" onClick={() => showNotice('Checkout is coming soon')}>Checkout <Icon name="arrow-up-right" size={16} /></button><p>Pickup at Richland County High School is always free.</p></div></aside>
       <div className={isNoticeVisible ? 'notice is-visible' : 'notice'} role="status"><span><Icon name="check" size={15} /></span>{notice}</div>
     </div>
   )
@@ -363,6 +357,11 @@ function Storefront({ onNavigate }: { onNavigate: (path: string) => void }) {
 
 function App() {
   const [path, setPath] = useState(() => window.location.pathname)
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [notice, setNotice] = useState('')
+  const [isNoticeVisible, setIsNoticeVisible] = useState(false)
+  const noticeTimerRef = useRef(0)
 
   useEffect(() => {
     const handlePopState = () => setPath(window.location.pathname)
@@ -370,13 +369,34 @@ function App() {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
+  useEffect(() => () => window.clearTimeout(noticeTimerRef.current), [])
+
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
+  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+  const formattedSubtotal = useMemo(() => `$${subtotal.toFixed(2)}`, [subtotal])
+
   function navigate(nextPath: string) {
     window.history.pushState({}, '', nextPath)
     setPath(nextPath)
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
-  return path === '/designs' ? <DesignsPage onBack={() => navigate('/')} /> : <Storefront onNavigate={navigate} />
+  function showNotice(message: string) {
+    setNotice(message)
+    window.clearTimeout(noticeTimerRef.current)
+    noticeTimerRef.current = window.setTimeout(() => setIsNoticeVisible(false), 2600)
+    setIsNoticeVisible(true)
+  }
+
+  function updateQuantity(index: number, delta: number) {
+    setCart((prev) => prev.flatMap((item, itemIndex) => {
+      if (itemIndex !== index) return [item]
+      const quantity = item.quantity + delta
+      return quantity > 0 ? [{ ...item, quantity }] : []
+    }))
+  }
+
+  return path === '/designs' ? <DesignsPage onBack={() => navigate('/')} cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} notice={notice} isNoticeVisible={isNoticeVisible} showNotice={showNotice} totalItems={totalItems} formattedSubtotal={formattedSubtotal} updateQuantity={updateQuantity} /> : <Storefront onNavigate={navigate} cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} notice={notice} isNoticeVisible={isNoticeVisible} showNotice={showNotice} totalItems={totalItems} formattedSubtotal={formattedSubtotal} updateQuantity={updateQuantity} />
 }
 
 export default App

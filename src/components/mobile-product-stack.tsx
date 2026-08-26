@@ -9,6 +9,7 @@ type StackProduct = {
   color: string
   colorName: string
   image: string
+  imageSrc: string
   description: string
   tag: string
 }
@@ -90,11 +91,8 @@ function MobileProductStack({ products, onActiveChange }: { products: StackProdu
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 style={{ zIndex: style.z, transformStyle: 'preserve-3d' }}
               >
-                <div className="stack-card-face" style={{ '--card-color': product.color } as React.CSSProperties}>
-                  <span className="stack-card-brand">RCHS</span>
-                  <strong>{product.image}</strong>
-                  <small>product image</small>
-                  <span className="stack-card-team">TIGERS</span>
+                <div className="stack-card-face">
+                  <img src={product.imageSrc} alt={product.name} width={300} height={330} loading={position === 0 ? 'eager' : 'lazy'} decoding="async" />
                 </div>
                 <div className="stack-card-copy"><strong>{product.name}</strong><span>${product.price.toFixed(2)}</span></div>
               </motion.div>
