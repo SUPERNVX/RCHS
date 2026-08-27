@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { DesignsPage } from './DesignsPage'
+import { OrderPage } from './OrderPage'
+import { VerifyPage } from './VerifyPage'
 import SpinImage from './components/originkit/ui/spinimage'
 import { FadeText } from './components/ui/fade-text'
 import { MobileProductStack } from './components/mobile-product-stack'
@@ -71,7 +73,7 @@ const products: Product[] = [
     id: 4,
     name: 'Always Be A Tiger',
     label: 'Spirit Wear',
-    price: 34,
+    price: 32,
     color: '#2f3336',
     colorName: 'Dark Heather',
     image: 'IMG 04',
@@ -123,7 +125,7 @@ function useIsMobile() {
   return isMobile
 }
 
-function Storefront({ onNavigate, cart, setCart, isCartOpen, setIsCartOpen, notice, isNoticeVisible, showNotice, totalItems, formattedSubtotal, updateQuantity }: { onNavigate: (path: string) => void; cart: CartItem[]; setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; isCartOpen: boolean; setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>; notice: string; isNoticeVisible: boolean; showNotice: (msg: string) => void; totalItems: number; formattedSubtotal: string; updateQuantity: (index: number, delta: number) => void }) {
+function Storefront({ onNavigate, onNavigateOrder, cart, setCart, isCartOpen, setIsCartOpen, notice, isNoticeVisible, showNotice, totalItems, formattedSubtotal, updateQuantity }: { onNavigate: (path: string) => void; onNavigateOrder: () => void; cart: CartItem[]; setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; isCartOpen: boolean; setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>; notice: string; isNoticeVisible: boolean; showNotice: (msg: string) => void; totalItems: number; formattedSubtotal: string; updateQuantity: (index: number, delta: number) => void }) {
   const [activeProductId, setActiveProductId] = useState(1)
   const isMobile = useIsMobile()
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -348,8 +350,8 @@ function Storefront({ onNavigate, cart, setCart, isCartOpen, setIsCartOpen, noti
 
       <footer className="site-footer"><div className="footer-brand"><span className="brand-mark">RC</span><span><strong>Richland County</strong><small>High School · Tigers</small></span></div><p>Official merchandise for the Tiger community.</p><span>© 2026 RCHS</span></footer>
 
-      <div className={isCartOpen ? 'cart-overlay is-open' : 'cart-overlay'} onClick={() => setIsCartOpen(false)} />
-       <aside className={isCartOpen ? 'cart-drawer is-open' : 'cart-drawer'} aria-label="Shopping bag" aria-hidden={!isCartOpen}><div className="cart-header"><div><p className="eyebrow">Your selection</p><h2>Shopping bag <span>{totalItems}</span></h2></div><button type="button" aria-label="Close shopping bag" onClick={() => setIsCartOpen(false)}><Icon name="close" /></button></div><div className="cart-items">{cart.length === 0 ? <div className="empty-cart"><div className="empty-bag"><Icon name="bag" size={24} /></div><h3>Your bag is waiting.</h3><p>Choose a piece from the collection and make it yours.</p><button className="text-link" type="button" onClick={() => setIsCartOpen(false)}>Keep browsing <Icon name="arrow-right" size={15} /></button></div> : cart.map((item, index) => <div className="cart-item" key={`${item.product.id}-${item.size}-${item.colorName}-${item.text}`}><div className="cart-item-image"><img src={item.product.imageSrc} alt={item.product.name} width={83} height={83} loading="lazy" decoding="async" /></div><div className="cart-item-copy"><div><strong>{item.product.name}</strong><span>{item.colorName} · {item.size}{item.text && ` · ${item.text}`}</span></div><strong>${(item.product.price * item.quantity).toFixed(2)}</strong><div className="quantity"><button type="button" aria-label="Decrease quantity" onClick={() => updateQuantity(index, -1)}><Icon name="minus" size={13} /></button><span>{item.quantity}</span><button type="button" aria-label="Increase quantity" onClick={() => updateQuantity(index, 1)}><Icon name="plus" size={13} /></button></div></div></div>)}</div><div className="cart-footer"><div><span>Subtotal</span><strong>{formattedSubtotal}</strong></div><button className="button button-dark checkout-button" type="button" onClick={() => showNotice('Checkout is coming soon')}>Checkout <Icon name="arrow-up-right" size={16} /></button><p>Pickup at Richland County High School is always free.</p></div></aside>
+       <div className={isCartOpen ? 'cart-overlay is-open' : 'cart-overlay'} onClick={() => setIsCartOpen(false)} />
+        <aside className={isCartOpen ? 'cart-drawer is-open' : 'cart-drawer'} aria-label="Shopping bag" aria-hidden={!isCartOpen}><div className="cart-header"><div><p className="eyebrow">Your selection</p><h2>Shopping bag <span>{totalItems}</span></h2></div><button type="button" aria-label="Close shopping bag" onClick={() => setIsCartOpen(false)}><Icon name="close" /></button></div><div className="cart-items">{cart.length === 0 ? <div className="empty-cart"><div className="empty-bag"><Icon name="bag" size={24} /></div><h3>Your bag is waiting.</h3><p>Choose a piece from the collection and make it yours.</p><button className="text-link" type="button" onClick={() => setIsCartOpen(false)}>Keep browsing <Icon name="arrow-right" size={15} /></button></div> : cart.map((item, index) => <div className="cart-item" key={`${item.product.id}-${item.size}-${item.colorName}-${item.text}`}><div className="cart-item-image"><img src={item.product.imageSrc} alt={item.product.name} width={83} height={83} loading="lazy" decoding="async" /></div><div className="cart-item-copy"><div><strong>{item.product.name}</strong><span>{item.colorName} · {item.size}{item.text && ` · ${item.text}`}</span></div><strong>${(item.product.price * item.quantity).toFixed(2)}</strong><div className="quantity"><button type="button" aria-label="Decrease quantity" onClick={() => updateQuantity(index, -1)}><Icon name="minus" size={13} /></button><span>{item.quantity}</span><button type="button" aria-label="Increase quantity" onClick={() => updateQuantity(index, 1)}><Icon name="plus" size={13} /></button></div></div></div>)}</div><div className="cart-footer"><div><span>Subtotal</span><strong>{formattedSubtotal}</strong></div><button className="button button-dark checkout-button" type="button" onClick={() => { setIsCartOpen(false); onNavigateOrder() }} disabled={cart.length === 0}>Checkout <Icon name="arrow-up-right" size={16} /></button><p>Pickup at Richland County High School is always free.</p></div></aside>
       <div className={isNoticeVisible ? 'notice is-visible' : 'notice'} role="status"><span><Icon name="check" size={15} /></span>{notice}</div>
     </div>
   )
@@ -357,11 +359,26 @@ function Storefront({ onNavigate, cart, setCart, isCartOpen, setIsCartOpen, noti
 
 function App() {
   const [path, setPath] = useState(() => window.location.pathname)
-  const [cart, setCart] = useState<CartItem[]>([])
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const raw = localStorage.getItem('rchs-cart')
+      return raw ? (JSON.parse(raw) as CartItem[]) : []
+    } catch {
+      return []
+    }
+  })
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [notice, setNotice] = useState('')
   const [isNoticeVisible, setIsNoticeVisible] = useState(false)
   const noticeTimerRef = useRef(0)
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('rchs-cart', JSON.stringify(cart))
+    } catch {
+      return
+    }
+  }, [cart])
 
   useEffect(() => {
     const handlePopState = () => setPath(window.location.pathname)
@@ -396,7 +413,9 @@ function App() {
     }))
   }
 
-  return path === '/designs' ? <DesignsPage onBack={() => navigate('/')} cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} notice={notice} isNoticeVisible={isNoticeVisible} showNotice={showNotice} totalItems={totalItems} formattedSubtotal={formattedSubtotal} updateQuantity={updateQuantity} /> : <Storefront onNavigate={navigate} cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} notice={notice} isNoticeVisible={isNoticeVisible} showNotice={showNotice} totalItems={totalItems} formattedSubtotal={formattedSubtotal} updateQuantity={updateQuantity} />
+  if (path === '/order') return <OrderPage cart={cart} totalItems={totalItems} formattedSubtotal={formattedSubtotal} updateQuantity={updateQuantity} onNavigate={navigate} showNotice={showNotice} />
+  if (path.startsWith('/verify')) return <VerifyPage onNavigate={navigate} />
+  return path === '/designs' ? <DesignsPage onBack={() => navigate('/')} onNavigate={navigate} cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} notice={notice} isNoticeVisible={isNoticeVisible} showNotice={showNotice} totalItems={totalItems} formattedSubtotal={formattedSubtotal} updateQuantity={updateQuantity} /> : <Storefront onNavigate={navigate} cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} notice={notice} isNoticeVisible={isNoticeVisible} showNotice={showNotice} totalItems={totalItems} formattedSubtotal={formattedSubtotal} updateQuantity={updateQuantity} onNavigateOrder={() => navigate('/order')} />
 }
 
 export default App
