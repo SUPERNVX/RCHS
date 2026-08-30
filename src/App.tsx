@@ -270,7 +270,7 @@ function Storefront({ onNavigate, onNavigateOrder, cart, setCart, isCartOpen, se
             <div className="hero-spinimage" aria-label="Spinning RCHS apparel">
               <SpinImage images={heroShirtUrls} imageWidth={150} imageHeight={200} direction="anticlockwise" path="curved" xCurve={-28} yCurve={-18} speed={1.6} rounded={16} orbitUnit="%" orbitWidthPct={58} />
             </div>
-            <MobileHeroCircle images={heroShirtUrls.slice(0, 5)} size={112} />
+            <MobileHeroCircle images={heroShirtUrls.slice(0, 5)} />
             <div className="hero-sticker">RCHS<br /><b>TIGERS</b></div>
             <div className="stage-caption"><span>01 / 04</span><span>Scroll to explore ↓</span></div>
           </div>
