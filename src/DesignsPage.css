@@ -21,5 +21,10 @@
 .flip-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .flip-face img { display: block; width: 100%; height: auto; }
 .flip-back { position: absolute; inset: 0; transform: rotateY(180deg); }
-@media (max-width: 767px) { .pyramid-stage, .pyramid-stage > div { min-height: calc(100svh - 110px); } }
+@media (max-width: 767px) {
+  .pyramid-stage, .pyramid-stage > div { min-height: auto; }
+  .pyramid-stage { overflow: visible; }
+  .pyramid-grid { gap: 14px; }
+  .pyramid-card { will-change: auto; }
+}
 @media (prefers-reduced-motion: reduce) { .pyramid-card { transition: none; } }

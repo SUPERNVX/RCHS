@@ -47,7 +47,6 @@ const PYRAMID_OFFSET = 180
 const PARALLAX_SPEED = 0.8
 const SCRUB_TIME = 2.5
 const SCROLL_DISTANCE = 2200
-const MOBILE_SCROLL_DISTANCE = 1400
 
 type DesignsPageProps = {
   onBack: () => void
@@ -119,12 +118,18 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
 
   useLayoutEffect(() => {
     document.title = 'All Designs · Richland County Tigers'
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      const root = rootRef.current
+      if (!root) return
+      const cards = root.querySelectorAll<HTMLElement>('[data-design-card]')
+      gsap.set(cards, { clearProps: 'all' })
+      return
+    }
     const root = rootRef.current
     if (!root) return
 
     const context = gsap.context(() => {
-      const mobile = window.innerWidth < 768
-      const baseOffset = mobile ? PYRAMID_OFFSET * .7 : PYRAMID_OFFSET
+      const baseOffset = PYRAMID_OFFSET
       const center = root.querySelectorAll<HTMLElement>('[data-step="0"]')
       const stepOne = root.querySelectorAll<HTMLElement>('[data-step="1"]')
       const stepTwo = root.querySelectorAll<HTMLElement>('[data-step="2"]')
@@ -144,7 +149,7 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
         scrollTrigger: {
           trigger: stage,
           start: 'top top',
-          end: `+=${mobile ? MOBILE_SCROLL_DISTANCE : SCROLL_DISTANCE}`,
+          end: `+=${SCROLL_DISTANCE}`,
           scrub: SCRUB_TIME,
           pin: true,
           anticipatePin: 1,
