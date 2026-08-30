@@ -12,7 +12,7 @@ export function MobileHeroCircle({ images }: Props) {
   const [isDragging, setIsDragging] = useState(false)
   const dragStartRef = useRef(0)
   const rotationStartRef = useRef(0)
-  const radius = 250
+  const radius = 140
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   useEffect(() => {
