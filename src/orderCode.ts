@@ -139,10 +139,10 @@ export function decodeCode(code: string): { items: DecodedItem[]; errors: string
 }
 
 export function mailtoHref(code: string, cart: CartItem[]): string {
-  const total = cart.reduce((s, it) => s + 32 * it.quantity, 0)
+  const total = cart.reduce((s, it) => s + it.product.price * it.quantity, 0)
   const lines = cart.map((it) => {
     const slug = SLUG_BY_ID[it.product.id] ?? `id-${it.product.id}`
-    return `- ${it.product.name} (${slug}) — size ${it.size}, ${it.colorName}, "${it.text}" x${it.quantity} = $${(32 * it.quantity).toFixed(2)}`
+    return `- ${it.product.name} (${slug}) — size ${it.size}, ${it.colorName}, "${it.text}" x${it.quantity} = $${(it.product.price * it.quantity).toFixed(2)}`
   })
   const body = [
     'Hello, I would like to place my RCHS order:',

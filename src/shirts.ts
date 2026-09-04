@@ -29,6 +29,25 @@ export const shirtImages = {
   },
 } as const
 
+export const SHIRT_META: Record<number, { name: string; price: number; label: string }> = {
+  1: { name: 'Claw Stripes', price: 32, label: 'School Mark' },
+  2: { name: 'One Tiger Nation', price: 32, label: 'Community' },
+  3: { name: 'Tigers Block', price: 32, label: 'Varsity' },
+  4: { name: 'Always Be A Tiger', price: 32, label: 'Spirit Wear' },
+  5: { name: 'Tiger Strong', price: 32, label: 'Athletics' },
+  6: { name: 'Two-Tone Tiger', price: 32, label: 'School Mark' },
+  7: { name: 'Seniors', price: 32, label: 'Senior Edition' },
+  8: { name: 'Tigers Volleyball', price: 32, label: 'Volleyball' },
+  9: { name: 'Paw Pride', price: 32, label: 'Minimal' },
+}
+
+export const SHIRT_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => ({
+  id,
+  ...SHIRT_META[id],
+  imageSrc: shirtImages.front[id as keyof typeof shirtImages.front],
+  backSrc: shirtImages.back[id as keyof typeof shirtImages.back],
+}))
+
 export const heroShirtUrls = [
   shirtImages.front[1],
   shirtImages.front[2],

@@ -30,7 +30,7 @@ export function OrderPage({ cart, totalItems, updateQuantity, onNavigate, showNo
   const [theme, setThemeState] = useState<Theme>(getTheme)
   const [copied, setCopied] = useState(false)
   const code = useMemo(() => encodeCart(cart), [cart])
-  const total = useMemo(() => cart.reduce((s, it) => s + 32 * it.quantity, 0), [cart])
+  const total = useMemo(() => cart.reduce((s, it) => s + it.product.price * it.quantity, 0), [cart])
   const mailHref = useMemo(() => mailtoHref(code, cart), [code, cart])
 
   function switchTheme() {
@@ -86,13 +86,13 @@ export function OrderPage({ cart, totalItems, updateQuantity, onNavigate, showNo
           <div className="grid gap-8 lg:grid-cols-[1.35fr_.85fr]">
             <div className="space-y-4">
               {cart.map((item, index) => (
-                <div key={`${item.product.id}-${item.size}-${item.colorName}-${item.text}`} className="flex gap-4 rounded-2xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-card">
+                <div key={`${item.product.id}-${item.size}-${item.colorName}`} className="flex gap-4 rounded-2xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-card">
                   <img src={item.product.imageSrc} alt={item.product.name} width={96} height={96} className="h-24 w-24 rounded-xl object-cover" loading="lazy" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="font-display text-sm font-extrabold leading-none tracking-[-.03em]">{item.product.name}</h3>
-                        <p className="mt-1 font-mono text-[10px] tracking-wide text-[var(--muted)]">{item.colorName} · {item.size}{item.text ? ` · ${item.text}` : ''}</p>
+                        <p className="mt-1 font-mono text-[10px] tracking-wide text-[var(--muted)]">{item.colorName} · {item.size}</p>
                       </div>
                       <strong className="font-display text-sm">${(32 * item.quantity).toFixed(2)}</strong>
                     </div>

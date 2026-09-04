@@ -101,7 +101,7 @@ export function VerifyPage({ onNavigate }: { onNavigate: (path: string) => void 
                 const meta = SLUG_META[it.slug]
                 return (
                   <motion.div
-                    key={`${it.slug}-${it.size}-${it.colorSlug}-${it.text}`}
+                    key={`${it.slug}-${it.size}-${it.colorSlug}`}
                     variants={{
                       hidden: { opacity: 0, y: 14 },
                       visible: { opacity: 1, y: 0, transition: { duration: 0.52, ease: 'easeOut' } },
@@ -111,7 +111,7 @@ export function VerifyPage({ onNavigate }: { onNavigate: (path: string) => void 
                     <img src={meta?.front ?? shirtImages.front[1]} alt={meta?.title ?? it.slug} width={96} height={96} className="h-24 w-24 rounded-xl object-cover" loading="lazy" />
                     <div className="min-w-0 flex-1">
                       <h3 className="font-display text-sm font-extrabold tracking-[-.03em]">{meta?.title ?? it.slug}</h3>
-                      <p className="mt-1 font-mono text-[10px] tracking-wide text-[var(--muted)]">size {it.size} · {it.colorSlug} · {it.text} ×{it.quantity}</p>
+                      <p className="mt-1 font-mono text-[10px] tracking-wide text-[var(--muted)]">size {it.size} · {it.colorSlug} ×{it.quantity}</p>
                       <p className="mt-2 font-display text-sm font-bold">${(CATALOG_PRICE * it.quantity).toFixed(2)} <span className="font-mono text-xs font-normal text-[var(--muted)]">· ${CATALOG_PRICE.toFixed(2)} each</span></p>
                     </div>
                   </motion.div>

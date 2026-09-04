@@ -108,7 +108,6 @@ function MobileProductStack({ products, onActiveChange }: { products: StackProdu
           </div>
           <span>{String(products.length).padStart(2, '0')}</span>
         </div>
-        <p className="mobile-stack-hint">Scroll to explore ↓</p>
       </div>
     </section>
   )
