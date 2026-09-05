@@ -199,6 +199,7 @@ function Storefront({ onNavigate, onNavigateOrder, cart, setCart, isCartOpen, se
   const [selectedSize, setSelectedSize] = useState('M')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
+  const sizeGuideId = 'size-guide-panel'
   const [theme, setThemeState] = useState<Theme>(getTheme)
 
   function switchTheme() {
@@ -354,7 +355,7 @@ function Storefront({ onNavigate, onNavigateOrder, cart, setCart, isCartOpen, se
       <p className="customizer-copy">Personalize the details that make this tee feel like yours.</p>
       <div className="control-group"><label>01 / Select a color <span>{selectedColor.name}</span></label><div className="color-options">{colorOptions.map((color) => <button key={color.name} className={selectedColor.name === color.name ? 'color-swatch selected' : 'color-swatch'} style={{ backgroundColor: color.value }} type="button" aria-label={color.name} aria-pressed={selectedColor.name === color.name} onClick={() => setSelectedColor(color)}><span>{selectedColor.name === color.name && <Icon name="check" size={14} />}</span></button>)}</div></div>
       {shirtPicker}
-      <div className="control-group"><div className="control-label-row"><label>03 / Choose your size</label><button type="button" className="size-guide-toggle" aria-expanded={isSizeGuideOpen} onClick={() => setIsSizeGuideOpen(!isSizeGuideOpen)}>Size guide</button></div>{isSizeGuideOpen && <table className="size-guide"><thead><tr><th scope="col">Size</th><th scope="col">Chest (in)</th><th scope="col">Length (in)</th></tr></thead><tbody><tr><td>S</td><td>34-36</td><td>27</td></tr><tr><td>M</td><td>38-40</td><td>28</td></tr><tr><td>L</td><td>42-44</td><td>29</td></tr><tr><td>XL</td><td>46-48</td><td>30</td></tr><tr><td>2XL</td><td>50-52</td><td>31</td></tr></tbody></table>}<div className="size-options">{sizes.map((size) => <button key={size} type="button" className={selectedSize === size ? 'size-option selected' : 'size-option'} onClick={() => setSelectedSize(size)} aria-pressed={selectedSize === size}>{size}</button>)}</div></div>
+      <div className="control-group"><div className="control-label-row"><label>03 / Choose your size</label><button type="button" className="size-guide-toggle" aria-expanded={isSizeGuideOpen} aria-controls={sizeGuideId} onClick={() => setIsSizeGuideOpen(!isSizeGuideOpen)}>Size guide</button></div>{/* Grid-rows accordion: avoids height auto-measure; transitions to 0fr/1fr smoothly */}<div id={sizeGuideId} className={isSizeGuideOpen ? 'size-guide-wrap is-open' : 'size-guide-wrap'}><div className="size-guide-clip"><table className="size-guide"><thead><tr><th scope="col">Size</th><th scope="col">Chest (in)</th><th scope="col">Length (in)</th></tr></thead><tbody><tr><td>S</td><td>34-36</td><td>27</td></tr><tr><td>M</td><td>38-40</td><td>28</td></tr><tr><td>L</td><td>42-44</td><td>29</td></tr><tr><td>XL</td><td>46-48</td><td>30</td></tr><tr><td>2XL</td><td>50-52</td><td>31</td></tr></tbody></table></div></div><div className="size-options">{sizes.map((size) => <button key={size} type="button" className={selectedSize === size ? 'size-option selected' : 'size-option'} onClick={() => setSelectedSize(size)} aria-pressed={selectedSize === size}>{size}</button>)}</div></div>
       <button className="button button-orange add-button" type="button" onClick={addToCart}>Add to bag <span>${activeProduct.price.toFixed(2)}</span> <Icon name="arrow-up-right" size={16} /></button>
     </div>
   )
@@ -387,15 +388,15 @@ function Storefront({ onNavigate, onNavigateOrder, cart, setCart, isCartOpen, se
         <section className="hero-section">
           <div className="hero-copy">
             <h1>
-              <FadeText text="Wear the" direction="in" wordDelay={0.45} duration={1.3} className="flex flex-wrap gap-x-[.22em]" />
+              <FadeText text="Wear the" direction="in" wordDelay={0.3} duration={0.7} className="flex flex-wrap gap-x-[.22em]" />
               <span className="flex flex-wrap items-baseline gap-x-[.22em]">
-                <FadeText text="Tiger" direction="in" delay={1} duration={1.3} className="inline-flex gap-x-[.22em] font-editorial font-normal italic text-tiger" />
-                <FadeText text="within." direction="in" delay={1.45} duration={1.3} className="inline-flex gap-x-[.22em]" />
+                <FadeText text="Tiger" direction="in" delay={0.55} duration={0.7} className="inline-flex gap-x-[.22em] font-editorial font-normal italic text-tiger" />
+                <FadeText text="within." direction="in" delay={0.8} duration={0.7} className="inline-flex gap-x-[.22em]" />
               </span>
             </h1>
-            <p className="hero-description rise" style={{ animationDelay: '2.5s' }}>A new take on school spirit. Designed by our community, made to move with yours.</p>
-            <a className="button button-dark rise" style={{ animationDelay: '2.7s' }} href="#shop">Explore the collection <Icon name="arrow-right" size={16} /></a>
-            <p className="hero-note rise" style={{ animationDelay: '2.85s' }}>Made for students, families &amp; the whole Tiger community.</p>
+            <p className="hero-description rise" style={{ animationDelay: '1.15s' }}>A new take on school spirit. Designed by our community, made to move with yours.</p>
+            <a className="button button-dark rise" style={{ animationDelay: '1.35s' }} href="#shop">Explore the collection <Icon name="arrow-right" size={16} /></a>
+            <p className="hero-note rise" style={{ animationDelay: '1.5s' }}>Made for students, families &amp; the whole Tiger community.</p>
           </div>
           <div className="hero-stage" aria-label="Featured Tigers apparel placeholders">
             <div className="stage-orbit orbit-one" />

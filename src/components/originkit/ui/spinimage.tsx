@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 const FALLBACK_IMAGES = [
     "https://imagedelivery.net/IEUjvl3YUlxY-MrTpOAWDQ/ed7b1c40-3332-43d8-a9eb-4615ef341b00/w=800",
@@ -57,6 +57,8 @@ export default function SpinImage(props: any) {
     const n = items.length
 
     const containerRef = useRef<HTMLDivElement | null>(null)
+    const orbitRef = useRef<HTMLDivElement | null>(null)
+    const itemRefs = useRef<Array<HTMLDivElement | null>>([])
     const [dims, setDims] = useState({ W: 0, H: 0 })
 
     useEffect(() => {
@@ -98,33 +100,81 @@ export default function SpinImage(props: any) {
     const theta0 = Math.atan2(H, W)
     const dir = direction === "anticlockwise" ? -1 : 1
 
-    const [orbitPhi, setOrbitPhi] = useState(0)
-    const rafRef = useRef<number | null>(null)
-
     // Speed 0 → static, 20 → ~1 rev/sec (very fast). Linear between.
     const revsPerSec = Math.max(0, Math.min(20, speed ?? 5)) * 0.05
 
+    // Orbit phase lives in a ref and is painted straight to the DOM via
+    // transform (GPU-only) — no React state per frame, so the rAF loop
+    // never re-renders the component tree.
+    const orbitPhiRef = useRef(0)
+    const rafRef = useRef<number | null>(null)
+
+    const cosT = Math.cos(theta0)
+    const sinT = Math.sin(theta0)
+
+    const paint = (phi: number) => {
+        const orbit = orbitRef.current
+        if (!orbit) return
+        const cx = W / 2
+        const cy = H / 2
+        for (let i = 0; i < n; i++) {
+            const el = itemRefs.current[i]
+            if (!el) continue
+            const p = (i / n) * Math.PI * 2 + phi
+            const ex = a * Math.cos(p)
+            const ey = b * Math.sin(p)
+            // Static tilt rotation of the ellipse.
+            const x = ex * cosT - ey * sinT
+            const y = ex * sinT + ey * cosT
+            const left = cx + x - imgW / 2
+            const top = cy + y - imgH / 2
+            // Curved path: size by major-axis depth. Straight: uniform.
+            const depth = (Math.cos(p) + 1) / 2 // 0 back … 1 front
+            const sf = path === "curved" ? 0.6 + 0.8 * depth : 1
+            // Stack follows the motion: lower (nearer) on screen = more
+            // "front" → higher z. Back-arc images stay behind, rising to
+            // the top only as they swing to the front.
+            const zIndex = Math.round(y)
+            el.style.left = `${left}px`
+            el.style.top = `${top}px`
+            el.style.transform = `rotateX(${yCurve ?? 0}deg) rotateY(${-(xCurve ?? 0)}deg) scale(${sf})`
+            el.style.zIndex = `${zIndex}`
+        }
+    }
+
+    // The rAF loop always calls the freshest paint closure (props can change
+    // without a resize event).
+    const paintRef = useRef(paint)
+    useLayoutEffect(() => {
+        paintRef.current = paint
+    })
+
+    // Position once per layout (resize, prop change) before paint.
+    useLayoutEffect(() => {
+        paint(orbitPhiRef.current)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [W, H, a, b, cosT, sinT, imgW, imgH, n, path, xCurve, yCurve])
+
     useEffect(() => {
         if (!W || !H || revsPerSec <= 0) return
+        // Decorative ambient motion: respect prefers-reduced-motion.
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
         const start = performance.now()
+        const startPhi = orbitPhiRef.current
         // Ellipse orientation stays static; images travel along the orbit path
         // at a constant speed set by `speed`.
         const tick = (now: number) => {
             const elapsed = (now - start) / 1000
-            setOrbitPhi(dir * 2 * Math.PI * revsPerSec * elapsed)
+            orbitPhiRef.current = startPhi + dir * 2 * Math.PI * revsPerSec * elapsed
+            paintRef.current(orbitPhiRef.current)
             rafRef.current = requestAnimationFrame(tick)
         }
         rafRef.current = requestAnimationFrame(tick)
         return () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [W, H, revsPerSec, dir])
-
-    const cx = W / 2
-    const cy = H / 2
-    // Static ellipse orientation (fixed tilt) — positions never move.
-    const cosT = Math.cos(theta0)
-    const sinT = Math.sin(theta0)
 
     return (
         <div
@@ -142,6 +192,7 @@ export default function SpinImage(props: any) {
                 forward; +90 Y → top forward. Browser depth-sorts, all images
                 stay rendered, and image size is untouched. */}
             <div
+                ref={orbitRef}
                 style={{
                     position: "absolute",
                     inset: 0,
@@ -150,61 +201,48 @@ export default function SpinImage(props: any) {
                 }}
             >
                 {n > 0 &&
-                    items.map((src: string, i: number) => {
-                        const phi = (i / n) * Math.PI * 2 + orbitPhi
-                        const ex = a * Math.cos(phi)
-                        const ey = b * Math.sin(phi)
-                        // Static tilt rotation of the ellipse.
-                        const x = ex * cosT - ey * sinT
-                        const y = ex * sinT + ey * cosT
-                        const left = cx + x - imgW / 2
-                        const top = cy + y - imgH / 2
-                        // Curved path: size by major-axis depth. Straight: uniform.
-                        const depth = (Math.cos(phi) + 1) / 2 // 0 back … 1 front
-                        const sf = path === "curved" ? 0.6 + 0.8 * depth : 1
-                        // Stack follows the motion: lower (nearer) on screen = more
-                        // "front" → higher z. Back-arc images stay behind, rising to
-                        // the top only as they swing to the front.
-                        const zIndex = Math.round(y)
-                        return (
-                            <div
-                                key={i}
-                                style={{
-                                    position: "absolute",
-                                    left,
-                                    top,
-                                    width: imgW,
-                                    height: imgH,
-                                    // Counter-rotate (inverse of the orbit wrapper)
-                                    // so only the orbit shape curves — images keep
-                                    // facing the viewer.
-                                    transform: `rotateX(${yCurve ?? 0}deg) rotateY(${-(xCurve ?? 0)}deg) scale(${sf})`,
-                                    zIndex,
-                                    borderRadius: radius,
-                                    overflow: "hidden",
-                                    backgroundImage: placeholder ? "none" : `url(${src})`,
-                                    backgroundColor: placeholder ? (i % 2 === 0 ? "#f2762e" : "#d6d2c9") : undefined,
-                                    backgroundSize: "cover",
-                                    backgroundPosition: "center",
-                                    backgroundRepeat: "no-repeat",
-                                    boxShadow:
-                                        "0 8px 24px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15)",
-                                    willChange: "left, top, transform",
-                                    pointerEvents: "none",
-                                    display: placeholder ? "flex" : undefined,
-                                    alignItems: placeholder ? "center" : undefined,
-                                    justifyContent: placeholder ? "center" : undefined,
-                                    color: placeholder && i % 2 === 0 ? "rgba(255,255,255,.86)" : "#78756f",
-                                    fontFamily: placeholder ? "'Manrope', Inter, sans-serif" : undefined,
-                                    fontSize: placeholder ? 24 : undefined,
-                                    fontWeight: placeholder ? 800 : undefined,
-                                    letterSpacing: placeholder ? "-.08em" : undefined,
-                                }}
-                            >
-                                {placeholder && src}
-                            </div>
-                        )
-                    })}
+                    items.map((src: string, i: number) => (
+                        <div
+                            key={i}
+                            ref={(el) => {
+                                itemRefs.current[i] = el
+                            }}
+                            style={{
+                                position: "absolute",
+                                // Initial position; the rAF loop takes over via
+                                // direct style writes (no React re-renders).
+                                left: 0,
+                                top: 0,
+                                width: imgW,
+                                height: imgH,
+                                // Counter-rotate (inverse of the orbit wrapper)
+                                // so only the orbit shape curves — images keep
+                                // facing the viewer.
+                                transform: `rotateX(${yCurve ?? 0}deg) rotateY(${-(xCurve ?? 0)}deg) scale(1)`,
+                                borderRadius: radius,
+                                overflow: "hidden",
+                                backgroundImage: placeholder ? "none" : `url(${src})`,
+                                backgroundColor: placeholder ? (i % 2 === 0 ? "#f2762e" : "#d6d2c9") : undefined,
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                backgroundRepeat: "no-repeat",
+                                boxShadow:
+                                    "0 8px 24px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15)",
+                                willChange: "transform",
+                                pointerEvents: "none",
+                                display: placeholder ? "flex" : undefined,
+                                alignItems: placeholder ? "center" : undefined,
+                                justifyContent: placeholder ? "center" : undefined,
+                                color: placeholder && i % 2 === 0 ? "rgba(255,255,255,.86)" : "#78756f",
+                                fontFamily: placeholder ? "'Manrope', Inter, sans-serif" : undefined,
+                                fontSize: placeholder ? 24 : undefined,
+                                fontWeight: placeholder ? 800 : undefined,
+                                letterSpacing: placeholder ? "-.08em" : undefined,
+                            }}
+                        >
+                            {placeholder && src}
+                        </div>
+                    ))}
             </div>
         </div>
     )

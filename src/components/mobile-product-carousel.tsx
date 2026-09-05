@@ -18,7 +18,9 @@ export function MobileProductCarousel({
   onSelect: (id: number) => void
 }) {
   const [dragX, setDragX] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
   const startX = useRef(0)
+  const startTime = useRef(0)
   const dragging = useRef(false)
   const activeIndex = products.findIndex((p) => p.id === activeId)
   const safeIndex = activeIndex === -1 ? 0 : activeIndex
@@ -31,19 +33,25 @@ export function MobileProductCarousel({
 
   function onPointerDown(e: React.PointerEvent) {
     dragging.current = true
+    setIsDragging(true)
     startX.current = e.clientX
+    startTime.current = performance.now()
     ;(e.target as Element).setPointerCapture(e.pointerId)
   }
   function onPointerMove(e: React.PointerEvent) {
     if (!dragging.current) return
     setDragX(e.clientX - startX.current)
   }
-  function onPointerUp(e: React.PointerEvent) {
+  function endDrag(e: React.PointerEvent) {
     if (!dragging.current) return
     dragging.current = false
+    setIsDragging(false)
     const dx = e.clientX - startX.current
+    const elapsed = Math.max(1, performance.now() - startTime.current)
     setDragX(0)
-    if (Math.abs(dx) > 50) {
+    // Flicks should count: velocity (px/ms) beats a fixed distance threshold.
+    const velocity = Math.abs(dx) / elapsed
+    if (Math.abs(dx) > 50 || velocity > 0.11) {
       go(dx < 0 ? 1 : -1)
     }
   }
@@ -54,8 +62,14 @@ export function MobileProductCarousel({
         className="mobile-h-card"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        style={{ transform: `translateX(${dragX * 0.2}px)` }}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        style={{
+          transform: `translateX(${dragX * 0.2}px)`,
+          // While dragging the card follows the finger 1:1 (no transition);
+          // on release it snaps back on an interruptible CSS transition.
+          transition: isDragging ? 'none' : 'transform 300ms cubic-bezier(.2,.8,.2,1)',
+        }}
       >
         <button
           type="button"

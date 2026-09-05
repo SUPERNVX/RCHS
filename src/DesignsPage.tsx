@@ -162,14 +162,17 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
       timeline.to(center, { y: centerDistance, ease: 'power2.inOut' }, 0.15)
 
       cards.forEach((card) => {
+        // Decorative tilt: skip binding under reduced motion, and overwrite
+        // in-flight tweens so fast mice don't stack competing tweens.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
         const handleMove = (event: Event) => {
           const pointerEvent = event as MouseEvent
           const rect = card.getBoundingClientRect()
           const rotateX = ((pointerEvent.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -12
           const rotateY = ((pointerEvent.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 12
-          gsap.to(card, { rotateX, rotateY, transformPerspective: 800, duration: .3, ease: 'power1.out' })
+          gsap.to(card, { rotateX, rotateY, transformPerspective: 800, duration: .3, ease: 'power1.out', overwrite: 'auto' })
         }
-        const handleLeave = () => gsap.to(card, { rotateX: 0, rotateY: 0, duration: .5, ease: 'power2.out' })
+        const handleLeave = () => gsap.to(card, { rotateX: 0, rotateY: 0, duration: .5, ease: 'power2.out', overwrite: 'auto' })
         card.addEventListener('mousemove', handleMove)
         card.addEventListener('mouseleave', handleLeave)
       })
@@ -180,8 +183,20 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
 
   useLayoutEffect(() => {
     if (!selectedDesign || !modalContentRef.current) return
-    gsap.fromTo(modalContentRef.current, { scale: .8, opacity: 0, filter: 'blur(8px)' }, { scale: 1, opacity: 1, filter: 'blur(0px)', duration: .45, ease: 'back.out(1.7)' })
+    // Deliberate entrance (system response is the snap-back exit below).
+    gsap.fromTo(modalContentRef.current, { scale: .8, opacity: 0, filter: 'blur(8px)' }, { scale: 1, opacity: 1, filter: 'blur(0px)', duration: .35, ease: 'power3.out' })
   }, [selectedDesign])
+
+  // Brief blur-masked exit before unmount so the modal doesn't teleport away.
+  // Deliberate action (close press) animates slower; system snap-back is fast.
+  function requestClose() {
+    const node = modalContentRef.current
+    if (!node) {
+      setSelectedDesign(null)
+      return
+    }
+    gsap.to(node, { opacity: 0, scale: .97, filter: 'blur(4px)', duration: .18, ease: 'power2.in', onComplete: () => setSelectedDesign(null) })
+  }
 
   useEffect(() => {
     if (!selectedDesign) return
@@ -189,7 +204,7 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
     modalCloseRef.current?.focus()
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setSelectedDesign(null)
+        requestClose()
         return
       }
       if (event.key !== 'Tab' || !modalContentRef.current) return
@@ -247,7 +262,7 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
           <FadeText text="the Tiger." direction="in" wordDelay={0.09} delay={0.55} className="mt-1 flex flex-wrap justify-center gap-x-[.26em] font-editorial text-tiger font-normal italic" />
         </h1>
         <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[var(--muted)]">A living collection of marks, colors and ideas from the Richland County community.</p>
-        <div className="mt-8 flex animate-bounce items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 font-mono text-[10px] tracking-wider text-[var(--muted)] dark:border-white/10 dark:bg-card"><MiniIcon name="arrow-down" size={14} /> Scroll to explore the archive</div>
+        <div className="mt-8 flex scroll-hint-bounce items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 font-mono text-[10px] tracking-wider text-[var(--muted)] dark:border-white/10 dark:bg-card"><MiniIcon name="arrow-down" size={14} /> Scroll to explore the archive</div>
       </section>
 
       <section className="pyramid-stage relative w-full overflow-hidden" data-pyramid-stage>
@@ -255,7 +270,7 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
           <div className="pyramid-grid grid w-full max-w-[1780px] grid-cols-2 items-start gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4 lg:grid-cols-5 lg:gap-5" data-pyramid-grid>
             {columns.map((column, columnIndex) => <div key={`${column.step}-${columnIndex}`} className="flex flex-col gap-4" data-step={column.step} data-col-index={columnIndex}>
               {column.designs.map((design) => <button key={design.number} type="button" data-design-card className="pyramid-card square-card group relative w-full overflow-hidden rounded-2xl border border-black/10 bg-white text-left outline-none focus-visible:ring-2 focus-visible:ring-tiger dark:border-white/10 dark:bg-card" onClick={() => { setSelectedDesign(design); setShowBack(false) }} aria-label={`Open ${design.title} design`}>
-                <img src={design.imageSrc} alt={design.title} width={400} height={400} loading="lazy" decoding="async" className="design-image absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img src={design.imageSrc} alt={design.title} width={400} height={400} loading="lazy" decoding="async" className="design-image absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <span className="design-index absolute left-3 top-3 z-10 rounded-full bg-black/55 px-2 py-1 font-mono text-[9px] tracking-[.14em] text-white backdrop-blur">IMG {String(design.number).padStart(2, '0')}</span>
                 <span className="design-center absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-1 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-4 pt-10 text-left"><strong className="text-sm font-extrabold leading-none tracking-[-.04em] text-white drop-shadow">{design.title}</strong><small className="font-mono text-[8px] tracking-[.16em] text-white/80">{design.category}</small></span>
                 <span className="design-overlay absolute inset-0 z-20 flex flex-col justify-end p-4 text-left opacity-0 transition-opacity duration-300 group-hover:opacity-100"><b className="font-mono text-[9px] uppercase tracking-[.12em] text-orange-300">#{String(design.number).padStart(2, '0')} {design.category}</b><span className="mt-1 text-xs font-semibold text-white">{design.description}</span></span>
@@ -271,7 +286,7 @@ export function DesignsPage({ onBack, onNavigate, cart, setCart, isCartOpen, set
       <aside className={isCartOpen ? 'cart-drawer is-open' : 'cart-drawer'} aria-label="Shopping bag" aria-hidden={!isCartOpen}><div className="cart-header"><div><p className="eyebrow">Your selection</p><h2>Shopping bag <span>{totalItems}</span></h2></div><button type="button" aria-label="Close shopping bag" onClick={() => setIsCartOpen(false)}><MiniIcon name="close" /></button></div><div className="cart-items">{cart.length === 0 ? <div className="empty-cart"><div className="empty-bag"><MiniIcon name="bag" size={24} /></div><h3>Your bag is waiting.</h3><p>Choose a design and make it yours.</p><button className="text-link" type="button" onClick={() => setIsCartOpen(false)}>Keep browsing <MiniIcon name="arrow-up-right" size={15} /></button></div> : cart.map((item, index) => <div className="cart-item" key={`${item.product.id}-${item.size}-${item.colorName}`}><div className="cart-item-image"><img src={item.product.imageSrc} alt={item.product.name} width={83} height={83} loading="lazy" decoding="async" /></div><div className="cart-item-copy"><div><strong>{item.product.name}</strong><span>{item.colorName} · {item.size}</span></div><strong>${(item.product.price * item.quantity).toFixed(2)}</strong><div className="quantity"><button type="button" aria-label="Decrease quantity" onClick={() => updateQuantity(index, -1)}><MiniIcon name="minus" size={13} /></button><span>{item.quantity}</span><button type="button" aria-label="Increase quantity" onClick={() => updateQuantity(index, 1)}><MiniIcon name="plus" size={13} /></button></div></div></div>)}</div><div className="cart-footer"><div><span>Subtotal</span><strong>{formattedSubtotal}</strong></div><button className="button button-dark checkout-button" type="button" onClick={() => { setIsCartOpen(false); onNavigate('/order') }} disabled={cart.length === 0}>Checkout <MiniIcon name="arrow-up-right" size={16} /></button><p>Pickup at Richland County High School is always free.</p></div></aside>
       <div className={isNoticeVisible ? 'notice is-visible' : 'notice'} role="status"><span><MiniIcon name="check" size={15} /></span>{notice}</div>
 
-      {selectedDesign && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-5 backdrop-blur-xl" role="dialog" aria-modal="true" aria-label={`${selectedDesign.title} preview`} onClick={() => setSelectedDesign(null)}><div ref={modalContentRef} className="design-modal" onClick={(event) => event.stopPropagation()}><button type="button" className="design-modal-close absolute right-0 top-0 z-10 text-white/70 transition hover:text-white" aria-label="Close design preview" ref={modalCloseRef} onClick={() => setSelectedDesign(null)}><MiniIcon name="close" /></button><div className="design-modal-title"><p>{selectedDesign.category}</p><h2>{selectedDesign.title}</h2><span>{selectedDesign.description}</span></div><div className="design-modal-art overflow-hidden rounded-2xl bg-white p-2"><div className={`flip-card ${showBack ? 'is-flipped' : ''}`} onClick={() => setShowBack((v) => !v)}><div className="flip-inner"><div className="flip-face flip-front"><img src={selectedDesign.imageSrc} alt={`${selectedDesign.title} front`} width={620} height={620} className="h-auto w-full rounded-xl object-cover" /></div><div className="flip-face flip-back"><img src={selectedDesign.backSrc} alt={`${selectedDesign.title} back`} width={620} height={620} className="h-auto w-full rounded-xl object-cover" /></div></div></div><div className="mt-3 flex items-center justify-between px-2 pb-2"><span className="font-mono text-[10px] tracking-widest text-black/60">{showBack ? 'BACK' : 'FRONT'}</span><button type="button" onClick={() => setShowBack((v) => !v)} className="font-mono text-[10px] tracking-widest text-tiger underline">{showBack ? 'View front →' : 'View back →'}</button></div><button type="button" onClick={() => { if (selectedDesign) addDesignToCart(selectedDesign) }} className="button button-orange mx-auto mt-2 flex w-full max-w-[320px] justify-center">Add to bag — ${DESIGN_PRICE} <MiniIcon name="arrow-up-right" size={15} /></button></div></div></div>}
+      {selectedDesign && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-5 backdrop-blur-xl" role="dialog" aria-modal="true" aria-label={`${selectedDesign.title} preview`} onClick={() => requestClose()}><div ref={modalContentRef} className="design-modal" onClick={(event) => event.stopPropagation()}><button type="button" className="design-modal-close absolute right-0 top-0 z-10 text-white/70 transition hover:text-white" aria-label="Close design preview" ref={modalCloseRef} onClick={() => requestClose()}><MiniIcon name="close" /></button><div className="design-modal-title"><p>{selectedDesign.category}</p><h2>{selectedDesign.title}</h2><span>{selectedDesign.description}</span></div><div className="design-modal-art overflow-hidden rounded-2xl bg-white p-2"><div className={`flip-card ${showBack ? 'is-flipped' : ''}`} onClick={() => setShowBack((v) => !v)}><div className="flip-inner"><div className="flip-face flip-front"><img src={selectedDesign.imageSrc} alt={`${selectedDesign.title} front`} width={620} height={620} className="h-auto w-full rounded-xl object-cover" /></div><div className="flip-face flip-back"><img src={selectedDesign.backSrc} alt={`${selectedDesign.title} back`} width={620} height={620} className="h-auto w-full rounded-xl object-cover" /></div></div></div><div className="mt-3 flex items-center justify-between px-2 pb-2"><span className="font-mono text-[10px] tracking-widest text-black/60">{showBack ? 'BACK' : 'FRONT'}</span><button type="button" onClick={() => setShowBack((v) => !v)} className="font-mono text-[10px] tracking-widest text-tiger underline">{showBack ? 'View front →' : 'View back →'}</button></div><button type="button" onClick={() => { if (selectedDesign) addDesignToCart(selectedDesign) }} className="button button-orange mx-auto mt-2 flex w-full max-w-[320px] justify-center">Add to bag — ${DESIGN_PRICE} <MiniIcon name="arrow-up-right" size={15} /></button></div></div></div>}
     </div>
   )
 }
